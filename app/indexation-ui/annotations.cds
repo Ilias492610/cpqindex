@@ -224,3 +224,31 @@ annotate service.QuoteItems with @(
 
     CurrencyCode @Common.Label : 'Currency';
 };
+
+annotate service.Previews with @(
+    Capabilities.InsertRestrictions : {
+        Insertable : false
+    },
+
+    Capabilities.UpdateRestrictions : {
+        Updatable : false
+    },
+
+    Capabilities.DeleteRestrictions : {
+        Deletable : false
+    }
+);
+
+annotate service.PreviewItems with @(
+    Capabilities.InsertRestrictions : {
+        Insertable : false
+    },
+
+    Capabilities.UpdateRestrictions : {
+        Updatable : false
+    },
+
+    Capabilities.DeleteRestrictions : {
+        Deletable : false
+    }
+);

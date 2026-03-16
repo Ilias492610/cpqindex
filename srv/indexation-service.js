@@ -1,22 +1,14 @@
-require('dotenv').config();
 const cds = require('@sap/cds');
+const { executeHttpRequest } = require('@sap-cloud-sdk/http-client');
 
-const CPQ_BASE_URL = (process.env.CPQ_BASE_URL || 'https://cangurusolutions-tst.cpq.cloud.sap').replace(/\/$/, '');
-const CPQ_TOKEN_URL = process.env.CPQ_TOKEN_URL || `${CPQ_BASE_URL}/oauth2/token`;
-const CPQ_CLIENT_ID = process.env.CPQ_CLIENT_ID;
-const CPQ_CLIENT_SECRET = process.env.CPQ_CLIENT_SECRET;
+const DESTINATION_NAME = process.env.CPQ_DESTINATION_NAME || 'CPQ_DEST';
 const CPQ_INDEXATION_SCRIPT_PATH = normalizePath(
   process.env.CPQ_INDEXATION_SCRIPT_PATH || '/customapi/executescript?scriptname=ApplyIndexationPOC'
 );
 
 const CPQ_MAX_PAGE_SIZE = 100;
 const CPQ_QUOTES_MAX_PAGE_SIZE = 100;
-const CPQ_QUOTES_DEFAULT_PAGE_SIZE = Number(process.env.CPQ_QUOTES_DEFAULT_PAGE_SIZE || 10);
-
-let tokenCache = {
-  accessToken: null,
-  expiresAt: 0
-};
+const CPQ_QUOTES_DEFAULT_PAGE_SIZE = 10;
 
 function normalizePath(path) {
   if (!path) return '';
@@ -43,12 +35,15 @@ function toBoolean(value, fallback = null) {
 
   if (typeof value === 'string') {
     const v = value.trim().toLowerCase();
-
     if (['true', 'yes', 'ja', 'y'].includes(v)) return true;
     if (['false', 'no', 'nee', 'n'].includes(v)) return false;
   }
 
   return fallback;
+}
+
+function round6(value) {
+  return Math.round((Number(value) + Number.EPSILON) * 1_000_000) / 1_000_000;
 }
 
 function getRecords(payload) {
@@ -75,16 +70,6 @@ function getPaging(req) {
   return { top, skip };
 }
 
-async function readPayload(response) {
-  const text = await response.text().catch(() => '');
-  if (!text) return {};
-  try {
-    return JSON.parse(text);
-  } catch {
-    return text;
-  }
-}
-
 function formatPayload(payload) {
   if (typeof payload === 'string') return payload;
   try {
@@ -94,93 +79,61 @@ function formatPayload(payload) {
   }
 }
 
-async function getAccessToken(forceRefresh = false) {
-  if (!CPQ_CLIENT_ID || !CPQ_CLIENT_SECRET) {
-    throw new Error('Missing CPQ_CLIENT_ID or CPQ_CLIENT_SECRET environment variables');
+function extractErrorMessage(error) {
+  if (!error) return 'Unknown error';
+
+  const sdkResponse =
+    error?.response?.data ||
+    error?.cause?.response?.data ||
+    error?.rootCause?.response?.data;
+
+  if (sdkResponse) {
+    if (typeof sdkResponse === 'string') return sdkResponse;
+    try {
+      return JSON.stringify(sdkResponse);
+    } catch {
+      return String(sdkResponse);
+    }
   }
 
-  if (
-    !forceRefresh &&
-    tokenCache.accessToken &&
-    Date.now() < tokenCache.expiresAt - 30_000
-  ) {
-    return tokenCache.accessToken;
-  }
-
-  const basicAuth = Buffer.from(`${CPQ_CLIENT_ID}:${CPQ_CLIENT_SECRET}`).toString('base64');
-
-  const response = await fetch(CPQ_TOKEN_URL, {
-    method: 'POST',
-    headers: {
-      Authorization: `Basic ${basicAuth}`,
-      'Content-Type': 'application/x-www-form-urlencoded'
-    },
-    body: 'grant_type=client_credentials'
-  });
-
-  const data = await readPayload(response);
-
-  if (!response.ok) {
-    throw new Error(`Token request failed: ${response.status} ${formatPayload(data)}`);
-  }
-
-  if (!data.access_token) {
-    throw new Error(`Token response did not contain access_token: ${formatPayload(data)}`);
-  }
-
-  const expiresInSeconds = toNumber(data.expires_in, 300);
-  tokenCache = {
-    accessToken: data.access_token,
-    expiresAt: Date.now() + expiresInSeconds * 1000
-  };
-
-  return tokenCache.accessToken;
+  return error.message || String(error);
 }
 
-async function cpqRequest(method, path, body, attempt = 0) {
+async function cpqRequest(method, path, body, contentType = 'application/json') {
   const started = Date.now();
 
   try {
-    const token = await getAccessToken(attempt > 0);
-
     const headers = {
-      Accept: 'application/json',
-      Authorization: `Bearer ${token}`
+      Accept: 'application/json'
     };
 
-    const options = {
+    const requestConfig = {
       method,
+      url: path,
       headers
     };
 
     if (body !== undefined) {
-      headers['Content-Type'] = 'application/json';
-      options.body = JSON.stringify(body);
+      requestConfig.data = body;
+      if (contentType) {
+        requestConfig.headers['Content-Type'] = contentType;
+      }
     }
 
-    const response = await fetch(`${CPQ_BASE_URL}${path}`, options);
-    const data = await readPayload(response);
+    const response = await executeHttpRequest(
+      { destinationName: DESTINATION_NAME },
+      requestConfig
+    );
+
     const duration = Date.now() - started;
+    console.log(`[CPQ] ${method} ${path} -> OK (${duration} ms)`);
 
-    if (response.status === 401 && attempt === 0) {
-      console.warn(`[CPQ] ${method} ${path} -> 401, refreshing token and retrying once`);
-      tokenCache = { accessToken: null, expiresAt: 0 };
-      return cpqRequest(method, path, body, attempt + 1);
-    }
-
-    if (!response.ok) {
-      console.error(`[CPQ] ${method} ${path} failed -> ${response.status} (${duration} ms)`);
-      throw new Error(`${method} ${path} failed: ${response.status} ${formatPayload(data)}`);
-    }
-
-    console.log(`[CPQ] ${method} ${path} -> ${response.status} (${duration} ms)`);
-    return data;
+    return response.data;
   } catch (error) {
     const duration = Date.now() - started;
-    console.error(
-      `[CPQ] ${method} ${path} failed -> UNKNOWN (${duration} ms): ${error.message}`
-    );
-    throw new Error(`CPQ call failed for ${path}: ${error.message}`);
+    const message = extractErrorMessage(error);
+    console.error(`[CPQ] ${method} ${path} -> FAILED (${duration} ms): ${message}`);
+    throw new Error(`${method} ${path} failed: ${message}`);
   }
 }
 
@@ -189,7 +142,7 @@ async function cpqGet(path) {
 }
 
 async function cpqPost(path, body) {
-  return cpqRequest('POST', path, body);
+  return cpqRequest('POST', path, body, 'application/json');
 }
 
 async function withRetries(label, fn, attempts = 3, delayMs = 700) {
@@ -385,6 +338,44 @@ function mapItem(rawItem, quoteId) {
   };
 }
 
+function buildPreviewItem(rawItem, quoteId, percentage) {
+  const mapped = mapItem(rawItem, quoteId);
+
+  const previewNetPrice = round6(mapped.NetPrice * (1 + percentage / 100));
+  const previewExtendedAmount = round6(previewNetPrice * mapped.Quantity);
+  const deltaAmount = round6(previewExtendedAmount - mapped.ExtendedAmount);
+
+  return {
+    cpqItemId: mapped.ItemId,
+    quoteId: mapped.QuoteId,
+    itemNumber: mapped.ItemNumber,
+    productName: mapped.ProductName,
+    description: mapped.Description,
+    quantity: mapped.Quantity,
+    originalNetPrice: mapped.NetPrice,
+    previewNetPrice,
+    originalExtendedAmount: mapped.ExtendedAmount,
+    previewExtendedAmount,
+    deltaAmount,
+    percentage: round6(percentage),
+    currencyCode: mapped.CurrencyCode
+  };
+}
+
+function validatePercentage(value) {
+  const percentage = Number(value);
+
+  if (!Number.isFinite(percentage)) {
+    throw new Error('percentage must be a number');
+  }
+
+  if (percentage < 0 || percentage > 100) {
+    throw new Error('percentage must be between 0 and 100');
+  }
+
+  return percentage;
+}
+
 function extractQuoteId(req) {
   return (
     req?.data?.quoteId ||
@@ -417,7 +408,20 @@ function extractBoundQuoteId(req) {
   );
 }
 
+function extractPreviewId(req) {
+  return (
+    req?.params?.[0]?.ID ||
+    req?.params?.[0]?.id ||
+    req?.data?.ID ||
+    req?.data?.id ||
+    req?.data?.previewId ||
+    null
+  );
+}
+
 module.exports = cds.service.impl(function () {
+  const { Previews, PreviewItems } = cds.entities('indexation');
+
   this.on('READ', 'Quotes', async req => {
     const quoteId = extractQuoteKey(req);
 
@@ -531,9 +535,9 @@ module.exports = cds.service.impl(function () {
     return mapped;
   });
 
-  this.on('ApplyIndexation', async req => {
+  this.on('CreatePreview', 'Quotes', async req => {
+    const tx = cds.tx(req);
     const quoteId = Number(extractBoundQuoteId(req));
-    const percentage = Number(req.data.percentage);
 
     if (!Number.isInteger(quoteId) || quoteId <= 0) {
       return req.reject({
@@ -543,84 +547,246 @@ module.exports = cds.service.impl(function () {
       });
     }
 
-    if (!Number.isFinite(percentage)) {
+    let percentage;
+    try {
+      percentage = validatePercentage(req.data.percentage);
+    } catch (e) {
       return req.reject({
         status: 400,
-        message: 'percentage must be a number',
+        message: e.message,
         target: 'percentage'
       });
     }
 
-    if (percentage < 0 || percentage > 100) {
-      return req.reject({
-        status: 400,
-        message: 'percentage must be between 0 and 100',
-        target: 'percentage'
-      });
-    }
-
-    const scriptResponse = await cpqPost(CPQ_INDEXATION_SCRIPT_PATH, {
-      Param: JSON.stringify({
-        quoteId,
-        percentage
-      })
-    });
-
-    if (scriptResponse?.Result !== 'Success') {
-      return req.reject({
-        status: 502,
-        message: scriptResponse?.Error || scriptResponse?.Result || 'CPQ indexation script failed'
-      });
-    }
-
-    const newQuoteId = Number(scriptResponse?.newQuoteId);
-
-    if (!Number.isInteger(newQuoteId) || newQuoteId <= 0) {
-      return req.reject({
-        status: 502,
-        message: 'CPQ script did not return a valid newQuoteId'
-      });
-    }
-
-    const [newQuoteRaw, newItemsRaw] = await Promise.all([
-      withRetries(
-        `GET /api/v1/quotes/${newQuoteId}`,
-        () => cpqGet(`/api/v1/quotes/${newQuoteId}`)
-      ),
-      withRetries(
-        `GET /api/v1/quotes/${newQuoteId}/items`,
-        () => cpqGet(`/api/v1/quotes/${newQuoteId}/items`)
-      )
+    const [quoteRaw, itemsRaw] = await Promise.all([
+      cpqGet(`/api/v1/quotes/${quoteId}`),
+      getAllQuoteItems(quoteId)
     ]);
 
-    const newQuote = mapQuote(newQuoteRaw);
-    const newItems = getRecords(newItemsRaw).map(item => mapItem(item, newQuoteId));
+    if (!itemsRaw.length) {
+      return req.reject({
+        status: 400,
+        message: 'Quote has no items'
+      });
+    }
+
+    const quote = mapQuote(quoteRaw);
+    const previewItems = itemsRaw.map(item => buildPreviewItem(item, quoteId, percentage));
+
+    const originalTotal = round6(
+      previewItems.reduce((sum, item) => sum + Number(item.originalExtendedAmount || 0), 0)
+    );
+
+    const previewTotal = round6(
+      previewItems.reduce((sum, item) => sum + Number(item.previewExtendedAmount || 0), 0)
+    );
+
+    const deltaTotal = round6(previewTotal - originalTotal);
+    const previewId = cds.utils.uuid();
+
+    await tx.run(
+      UPDATE(Previews)
+        .set({
+          status: 'CANCELLED',
+          errorMessage: 'Superseded by newer preview'
+        })
+        .where({
+          quoteId,
+          createdBy: req.user.id,
+          status: 'DRAFT'
+        })
+    );
+
+    await tx.run(
+      INSERT.into(Previews).entries({
+        ID: previewId,
+        quoteId,
+        quoteNumber: quote.QuoteNumber,
+        percentage: round6(percentage),
+        status: 'DRAFT',
+        currencyCode: quote.CurrencyCode,
+        originalTotal,
+        previewTotal,
+        deltaTotal,
+        itemCount: previewItems.length,
+        sourceQuoteDateModified: quote.DateModified
+      })
+    );
+
+    await tx.run(
+      INSERT.into(PreviewItems).entries(
+        previewItems.map(item => ({
+          ID: cds.utils.uuid(),
+          preview_ID: previewId,
+          ...item
+        }))
+      )
+    );
 
     console.log(
-      `[CPQ] ApplyIndexation success -> sourceQuoteId=${quoteId}, newQuoteId=${newQuoteId}, items=${newItems.length}`
+      `[PREVIEW] Created preview ${previewId} for quote ${quoteId} with ${previewItems.length} items`
     );
 
     return {
-      result: toText(scriptResponse.Result, 'Success'),
-      sourceQuoteId: toNumber(scriptResponse.sourceQuoteId ?? quoteId, quoteId),
-      newQuoteId,
-      baseQuoteNumber: toText(scriptResponse.baseQuoteNumber),
-      newQuoteNumber: toText(scriptResponse.newQuoteNumber || newQuote.QuoteNumber),
-      percentageApplied: toNumber(scriptResponse.percentageApplied ?? percentage, percentage),
-      itemsUpdated: toNumber(scriptResponse.itemsUpdated ?? newItems.length, newItems.length),
-      returnedItemsCount: newItems.length,
-      revisionCreated: Boolean(scriptResponse.revisionCreated),
-      calculatedTotalAmount: toNumber(
-        scriptResponse.calculatedTotalAmount,
-        newQuote.TotalAmount
-      ),
-      statusName: newQuote.StatusName,
-      dateCreated: newQuote.DateCreated,
-      dateModified: newQuote.DateModified,
-      isActiveRevision: newQuote.IsActiveRevision,
-      totalAmount: newQuote.TotalAmount,
-      totalNetPrice: newQuote.TotalNetPrice,
-      currencyCode: newQuote.CurrencyCode
+      previewId,
+      status: 'DRAFT'
+    };
+  });
+
+  this.on('Confirm', 'Previews', async req => {
+    const tx = cds.tx(req);
+    const previewId = extractPreviewId(req);
+
+    if (!previewId) {
+      return req.reject(400, 'Missing preview ID');
+    }
+
+    const preview = await tx.run(
+      SELECT.one.from(Previews).where({
+        ID: previewId,
+        createdBy: req.user.id
+      })
+    );
+
+    if (!preview) {
+      return req.reject(404, 'Preview not found');
+    }
+
+    const updated = await tx.run(
+      UPDATE(Previews)
+        .set({
+          status: 'APPLYING',
+          errorMessage: null
+        })
+        .where({
+          ID: previewId,
+          createdBy: req.user.id,
+          status: 'DRAFT'
+        })
+    );
+
+    if (!updated) {
+      return req.reject(409, 'Preview is already processed or no longer in DRAFT status');
+    }
+
+    try {
+      const scriptResponse = await cpqPost(CPQ_INDEXATION_SCRIPT_PATH, {
+        Param: JSON.stringify({
+          quoteId: preview.quoteId,
+          percentage: Number(preview.percentage)
+        })
+      });
+
+      if (scriptResponse?.Result !== 'Success') {
+        throw new Error(
+          scriptResponse?.Error ||
+          scriptResponse?.Result ||
+          'CPQ indexation script failed'
+        );
+      }
+
+      const newQuoteId = Number(scriptResponse?.newQuoteId);
+
+      if (!Number.isInteger(newQuoteId) || newQuoteId <= 0) {
+        throw new Error('CPQ script did not return a valid newQuoteId');
+      }
+
+      const [newQuoteRaw, newItemsRaw] = await Promise.all([
+        withRetries(
+          `GET /api/v1/quotes/${newQuoteId}`,
+          () => cpqGet(`/api/v1/quotes/${newQuoteId}`)
+        ),
+        withRetries(
+          `GET /api/v1/quotes/${newQuoteId}/items`,
+          () => cpqGet(`/api/v1/quotes/${newQuoteId}/items`)
+        )
+      ]);
+
+      const newQuote = mapQuote(newQuoteRaw);
+      const newItems = getRecords(newItemsRaw).map(item => mapItem(item, newQuoteId));
+
+      await tx.run(
+        UPDATE(Previews)
+          .set({
+            status: 'CONFIRMED',
+            confirmedNewQuoteId: newQuoteId,
+            confirmedNewQuoteNumber: newQuote.QuoteNumber,
+            cpqResult: toText(scriptResponse?.Result, 'Success'),
+            errorMessage: null
+          })
+          .where({ ID: previewId })
+      );
+
+      console.log(
+        `[PREVIEW] Confirmed preview ${previewId}: sourceQuoteId=${preview.quoteId}, newQuoteId=${newQuoteId}`
+      );
+
+      return {
+        success: true,
+        previewId,
+        sourceQuoteId: preview.quoteId,
+        sourceQuoteNumber: preview.quoteNumber,
+        newQuoteId,
+        newQuoteNumber: toText(scriptResponse?.newQuoteNumber || newQuote.QuoteNumber),
+        percentageApplied: toNumber(scriptResponse?.percentageApplied ?? preview.percentage, preview.percentage),
+        itemsUpdated: toNumber(scriptResponse?.itemsUpdated ?? newItems.length, newItems.length),
+        revisionCreated: Boolean(scriptResponse?.revisionCreated),
+        totalAmount: newQuote.TotalAmount,
+        totalNetPrice: newQuote.TotalNetPrice,
+        currencyCode: newQuote.CurrencyCode,
+        statusName: newQuote.StatusName,
+        dateCreated: newQuote.DateCreated,
+        dateModified: newQuote.DateModified,
+        isActiveRevision: newQuote.IsActiveRevision,
+        message: 'Indexation applied successfully'
+      };
+    } catch (error) {
+      const message = extractErrorMessage(error).slice(0, 1000);
+
+      await tx.run(
+        UPDATE(Previews)
+          .set({
+            status: 'FAILED',
+            errorMessage: message
+          })
+          .where({ ID: previewId })
+      );
+
+      return req.reject({
+        status: 502,
+        message
+      });
+    }
+  });
+
+  this.on('Cancel', 'Previews', async req => {
+    const tx = cds.tx(req);
+    const previewId = extractPreviewId(req);
+
+    if (!previewId) {
+      return req.reject(400, 'Missing preview ID');
+    }
+
+    const updated = await tx.run(
+      UPDATE(Previews)
+        .set({
+          status: 'CANCELLED'
+        })
+        .where({
+          ID: previewId,
+          createdBy: req.user.id,
+          status: 'DRAFT'
+        })
+    );
+
+    if (!updated) {
+      return req.reject(409, 'Only DRAFT previews can be cancelled');
+    }
+
+    return {
+      success: true,
+      status: 'CANCELLED',
+      message: 'Preview cancelled'
     };
   });
 });

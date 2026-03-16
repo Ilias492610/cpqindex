@@ -1,3 +1,5 @@
+using { cuid, managed } from '@sap/cds/common';
+
 namespace indexation;
 
 entity Quotes {
@@ -27,4 +29,49 @@ entity QuoteItems {
       ExtendedAmount  : Decimal(15,6);
       Indexation      : Decimal(9,3);
       CurrencyCode    : String(3);
+}
+
+entity Previews : cuid, managed {
+      quoteId                 : Integer not null;
+      quoteNumber             : String(20);
+      percentage              : Decimal(9,3) not null;
+      status                  : String(20) default 'DRAFT';
+      currencyCode            : String(3);
+
+      originalTotal           : Decimal(15,6);
+      previewTotal            : Decimal(15,6);
+      deltaTotal              : Decimal(15,6);
+      itemCount               : Integer;
+
+      sourceQuoteDateModified : Timestamp;
+
+      confirmedNewQuoteId     : Integer;
+      confirmedNewQuoteNumber : String(20);
+      cpqResult               : String(50);
+
+      errorMessage            : String(1000);
+
+      items                   : Composition of many PreviewItems
+                                  on items.preview = $self;
+}
+
+entity PreviewItems : cuid, managed {
+      preview                : Association to Previews not null;
+
+      cpqItemId              : Integer;
+      quoteId                : Integer;
+      itemNumber             : Integer;
+      productName            : String(255);
+      description            : String(500);
+      quantity               : Decimal(15,2);
+
+      originalNetPrice       : Decimal(15,6);
+      previewNetPrice        : Decimal(15,6);
+
+      originalExtendedAmount : Decimal(15,6);
+      previewExtendedAmount  : Decimal(15,6);
+
+      deltaAmount            : Decimal(15,6);
+      percentage             : Decimal(9,3);
+      currencyCode           : String(3);
 }
