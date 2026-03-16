@@ -114,7 +114,7 @@ sap.ui.define([
             if (oResult && oResult.newQuoteId) {
               MessageToast.show(getText("applyIndexationSuccess", [String(oResult.newQuoteId)]));
 
-              // simpele, robuuste navigatie naar de nieuwe quote
+              // navigatie naar de nieuwe quote
               const sHash = `#/Quotes(${oResult.newQuoteId})`;
               window.location.hash = sHash;
             } else {

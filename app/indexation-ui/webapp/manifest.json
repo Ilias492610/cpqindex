@@ -52,15 +52,6 @@
         "sap.fe.templates": {}
       }
     },
-    "extends": {
-      "extensions": {
-        "sap.ui.controllerExtensions": {
-          "sap.fe.templates.ObjectPage.ObjectPageController": {
-            "controllerName": "cpq.indexation.indexationui.ext.objectPage.ObjectPageExt"
-          }
-        }
-      }
-    },
     "contentDensities": {
       "compact": true,
       "cozy": true

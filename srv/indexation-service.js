@@ -9,6 +9,10 @@ const CPQ_INDEXATION_SCRIPT_PATH = normalizePath(
   process.env.CPQ_INDEXATION_SCRIPT_PATH || '/customapi/executescript?scriptname=ApplyIndexationPOC'
 );
 
+const CPQ_MAX_PAGE_SIZE = 100;
+const CPQ_QUOTES_MAX_PAGE_SIZE = 100;
+const CPQ_QUOTES_DEFAULT_PAGE_SIZE = Number(process.env.CPQ_QUOTES_DEFAULT_PAGE_SIZE || 10);
+
 let tokenCache = {
   accessToken: null,
   expiresAt: 0
@@ -32,6 +36,21 @@ function toText(value, fallback = '') {
   return value === null || value === undefined ? fallback : String(value);
 }
 
+function toBoolean(value, fallback = null) {
+  if (value === true || value === false) return value;
+  if (value === 1 || value === '1') return true;
+  if (value === 0 || value === '0') return false;
+
+  if (typeof value === 'string') {
+    const v = value.trim().toLowerCase();
+
+    if (['true', 'yes', 'ja', 'y'].includes(v)) return true;
+    if (['false', 'no', 'nee', 'n'].includes(v)) return false;
+  }
+
+  return fallback;
+}
+
 function getRecords(payload) {
   if (Array.isArray(payload)) return payload;
   if (Array.isArray(payload?.PagedRecords)) return payload.PagedRecords;
@@ -42,6 +61,18 @@ function getRecords(payload) {
 function getIndexationValue(customFields) {
   const field = (customFields || []).find(f => f?.Name === 'Indexation');
   return toNumber(field?.Content ?? field?.Value ?? 0, 0);
+}
+
+function getPaging(req) {
+  const limit = req.query?.SELECT?.limit;
+
+  const top =
+    Number(limit?.rows?.val ?? req?._queryOptions?.$top ?? 0) || null;
+
+  const skip =
+    Number(limit?.offset?.val ?? req?._queryOptions?.$skip ?? 0) || 0;
+
+  return { top, skip };
 }
 
 async function readPayload(response) {
@@ -182,6 +213,131 @@ async function withRetries(label, fn, attempts = 3, delayMs = 700) {
   throw lastError;
 }
 
+async function getQuotesWindow(skip = 0, top = CPQ_QUOTES_DEFAULT_PAGE_SIZE) {
+  const safeSkip = Math.max(0, toNumber(skip, 0));
+  const safeTop = Math.min(
+    CPQ_QUOTES_MAX_PAGE_SIZE,
+    Math.max(1, toNumber(top, CPQ_QUOTES_DEFAULT_PAGE_SIZE))
+  );
+
+  const data = await cpqGet(`/api/v1/quotes?$skip=${safeSkip}&$top=${safeTop}`);
+
+  return {
+    records: getRecords(data),
+    totalCount: toNumber(data?.TotalNumberOfRecords, null)
+  };
+}
+
+async function getQuotesForRequest(req) {
+  const { top, skip } = getPaging(req);
+  const countRequested = Boolean(req.query?.SELECT?.count);
+  const effectiveTop = top ?? CPQ_QUOTES_DEFAULT_PAGE_SIZE;
+
+  const { records, totalCount } = await getQuotesWindow(skip, effectiveTop);
+
+  return {
+    records,
+    totalCount: countRequested ? totalCount ?? records.length : null
+  };
+}
+
+async function findQuoteInQuoteList(quoteId, quoteNumber) {
+  const { totalCount } = await getQuotesWindow(0, CPQ_QUOTES_DEFAULT_PAGE_SIZE);
+  const total = Math.max(0, toNumber(totalCount, 0));
+
+  for (let skip = 0; skip < total; skip += CPQ_QUOTES_DEFAULT_PAGE_SIZE) {
+    const { records } = await getQuotesWindow(skip, CPQ_QUOTES_DEFAULT_PAGE_SIZE);
+
+    const match =
+      records.find(r => toNumber(r.QuoteId ?? r.Id, 0) === toNumber(quoteId, 0)) ||
+      records.find(r => toText(r.QuoteNumber) === toText(quoteNumber));
+
+    if (match) {
+      return match;
+    }
+
+    if (records.length < CPQ_QUOTES_DEFAULT_PAGE_SIZE) {
+      break;
+    }
+  }
+
+  return null;
+}
+
+async function getQuoteItemsCount(quoteId) {
+  const raw = await cpqGet(`/api/v1/quotes/${quoteId}/items/$count`);
+  return toNumber(raw, 0);
+}
+
+async function getQuoteItemsWindow(quoteId, skip = 0, top = CPQ_MAX_PAGE_SIZE) {
+  const safeSkip = Math.max(0, toNumber(skip, 0));
+  const safeTop = Math.min(CPQ_MAX_PAGE_SIZE, Math.max(1, toNumber(top, CPQ_MAX_PAGE_SIZE)));
+
+  const data = await cpqGet(
+    `/api/v1/quotes/${quoteId}/items?$skip=${safeSkip}&$top=${safeTop}`
+  );
+
+  return getRecords(data);
+}
+
+async function getAllQuoteItems(quoteId) {
+  const totalCount = await getQuoteItemsCount(quoteId);
+
+  if (totalCount <= 0) {
+    return [];
+  }
+
+  const chunks = [];
+  for (let skip = 0; skip < totalCount; skip += CPQ_MAX_PAGE_SIZE) {
+    const batch = await getQuoteItemsWindow(quoteId, skip, CPQ_MAX_PAGE_SIZE);
+    chunks.push(...batch);
+
+    if (batch.length < CPQ_MAX_PAGE_SIZE) {
+      break;
+    }
+  }
+
+  return chunks;
+}
+
+async function getQuoteItemsForRequest(quoteId, req) {
+  const { top, skip } = getPaging(req);
+  const countRequested = Boolean(req.query?.SELECT?.count);
+
+  if (top !== null) {
+    const totalCount = countRequested ? await getQuoteItemsCount(quoteId) : null;
+    const records = await getQuoteItemsWindow(quoteId, skip, top);
+
+    return {
+      records,
+      totalCount
+    };
+  }
+
+  const records = await getAllQuoteItems(quoteId);
+
+  return {
+    records,
+    totalCount: countRequested ? records.length : null
+  };
+}
+
+async function getQuoteListActiveRevision(quoteId, quoteNumber) {
+  const match = await findQuoteInQuoteList(quoteId, quoteNumber);
+
+  if (!match) {
+    return null;
+  }
+
+  return toBoolean(
+    match.IsActiveRevision ??
+    match.ActiveRevision ??
+    match.IsCurrentRevision ??
+    match.IsActive,
+    null
+  );
+}
+
 function mapQuote(rawQuote) {
   const q = rawQuote?.PagedRecords?.[0] || rawQuote?.Records?.[0] || rawQuote || {};
 
@@ -192,10 +348,22 @@ function mapQuote(rawQuote) {
     StatusName: toText(q.StatusName),
     DateCreated: q.DateCreated ?? null,
     DateModified: q.DateModified ?? null,
-    IsActiveRevision: q.IsActiveRevision ?? null,
+    IsActiveRevision: toBoolean(
+      q.IsActiveRevision ??
+      q.ActiveRevision ??
+      q.IsCurrentRevision ??
+      q.IsActive,
+      null
+    ),
     TotalAmount: toNumber(q.TotalAmount?.Value ?? q.TotalAmount, 0),
     TotalNetPrice: toNumber(q.TotalNetPrice?.Value ?? q.TotalNetPrice, 0),
-    CurrencyCode: q.TotalAmount?.Currency ?? q.CurrencyCode ?? null
+    CurrencyCode:
+      q.TotalAmount?.Currency ??
+      q.TotalNetPrice?.Currency ??
+      q.CurrencyCode ??
+      q.Currency ??
+      q.TransactionCurrency ??
+      null
   };
 }
 
@@ -210,7 +378,10 @@ function mapItem(rawItem, quoteId) {
     NetPrice: toNumber(rawItem.PricingDetails?.Fixed?.NetPrice?.Value, 0),
     ExtendedAmount: toNumber(rawItem.PricingDetails?.Fixed?.ExtendedAmount?.Value, 0),
     Indexation: getIndexationValue(rawItem.CustomFields),
-    CurrencyCode: rawItem.PricingDetails?.Fixed?.NetPrice?.Currency ?? null
+    CurrencyCode:
+      rawItem.PricingDetails?.Fixed?.NetPrice?.Currency ??
+      rawItem.PricingDetails?.Fixed?.ExtendedAmount?.Currency ??
+      null
   };
 }
 
@@ -252,13 +423,86 @@ module.exports = cds.service.impl(function () {
 
     if (quoteId) {
       const data = await cpqGet(`/api/v1/quotes/${quoteId}`);
-      return mapQuote(data);
+      const quote = mapQuote(data);
+
+      if (quote.IsActiveRevision === null) {
+        try {
+          const activeRevision = await getQuoteListActiveRevision(
+            quote.QuoteId || quoteId,
+            quote.QuoteNumber
+          );
+
+          return {
+            ...quote,
+            IsActiveRevision: activeRevision
+          };
+        } catch (err) {
+          console.warn(
+            `[CPQ] Failed to enrich IsActiveRevision for quote ${quoteId}: ${err.message}`
+          );
+        }
+      }
+
+      return quote;
     }
 
-    const data = await cpqGet('/api/v1/quotes');
-    const records = getRecords(data);
+    const countRequested = Boolean(req.query?.SELECT?.count);
+    const { records, totalCount } = await getQuotesForRequest(req);
 
-    return records.map(mapQuote);
+    console.log(
+      `[CPQ] Quotes returned=${records.length}, countRequested=${countRequested}, totalCount=${totalCount}`
+    );
+
+    const summaries = records.map(r => ({
+      QuoteId: toNumber(r.Id ?? r.QuoteId, 0),
+      QuoteNumber: toText(r.QuoteNumber),
+      RevisionNumber: toText(r.RevisionNumber),
+      StatusName: toText(r.StatusName),
+      DateCreated: r.DateCreated ?? null,
+      DateModified: r.DateModified ?? null,
+      IsActiveRevision: toBoolean(
+        r.IsActiveRevision ??
+        r.ActiveRevision ??
+        r.IsCurrentRevision ??
+        r.IsActive,
+        null
+      ),
+      TotalAmount: 0,
+      TotalNetPrice: 0,
+      CurrencyCode: null
+    }));
+
+    const enrichedQuotes = await Promise.all(
+      summaries.map(async quote => {
+        if (!quote.QuoteId) {
+          return quote;
+        }
+
+        try {
+          const detailRaw = await cpqGet(`/api/v1/quotes/${quote.QuoteId}`);
+          const detail = mapQuote(detailRaw);
+
+          return {
+            ...quote,
+            RevisionNumber: detail.RevisionNumber || quote.RevisionNumber,
+            StatusName: detail.StatusName || quote.StatusName,
+            IsActiveRevision: detail.IsActiveRevision ?? quote.IsActiveRevision,
+            TotalAmount: detail.TotalAmount,
+            TotalNetPrice: detail.TotalNetPrice,
+            CurrencyCode: detail.CurrencyCode
+          };
+        } catch (err) {
+          console.warn(`[CPQ] Failed to enrich quote ${quote.QuoteId}: ${err.message}`);
+          return quote;
+        }
+      })
+    );
+
+    if (countRequested) {
+      enrichedQuotes.$count = totalCount ?? enrichedQuotes.length;
+    }
+
+    return enrichedQuotes;
   });
 
   this.on('READ', 'QuoteItems', async req => {
@@ -269,10 +513,22 @@ module.exports = cds.service.impl(function () {
       return [];
     }
 
-    const data = await cpqGet(`/api/v1/quotes/${quoteId}/items`);
-    const records = getRecords(data);
+    const { top, skip } = getPaging(req);
+    const countRequested = Boolean(req.query?.SELECT?.count);
 
-    return records.map(item => mapItem(item, quoteId));
+    const { records, totalCount } = await getQuoteItemsForRequest(quoteId, req);
+
+    console.log(
+      `[CPQ] QuoteItems quoteId=${quoteId}, returned=${records.length}, skip=${skip}, top=${top}, countRequested=${countRequested}, totalCount=${totalCount}`
+    );
+
+    const mapped = records.map(item => mapItem(item, quoteId));
+
+    if (countRequested) {
+      mapped.$count = totalCount ?? mapped.length;
+    }
+
+    return mapped;
   });
 
   this.on('ApplyIndexation', async req => {

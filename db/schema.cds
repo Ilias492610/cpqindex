@@ -1,32 +1,30 @@
 namespace indexation;
 
-type Money : Decimal(15,2);
-
 entity Quotes {
   key QuoteId          : Integer;
-      QuoteNumber      : String;
-      RevisionNumber   : String;
-      StatusName       : String;
+      QuoteNumber      : String(20);
+      RevisionNumber   : String(10);
+      StatusName       : String(50);
       DateCreated      : Timestamp;
       DateModified     : Timestamp;
       IsActiveRevision : Boolean;
-      TotalAmount      : Money;
-      TotalNetPrice    : Money;
-      CurrencyCode     : String;
+      TotalAmount      : Decimal(15,6);
+      TotalNetPrice    : Decimal(15,6);
+      CurrencyCode     : String(3);
 
       items            : Association to many QuoteItems
                            on items.QuoteId = $self.QuoteId;
 }
 
 entity QuoteItems {
-  key ItemId           : Integer;
-      QuoteId          : Integer;
-      ItemNumber       : Integer;
-      ProductName      : String;
-      Description      : String;
-      Quantity         : Decimal(15,2);
-      NetPrice         : Money;
-      ExtendedAmount   : Money;
-      Indexation       : Decimal(9,3);
-      CurrencyCode     : String;
+  key ItemId          : Integer;
+      QuoteId         : Integer;
+      ItemNumber      : Integer;
+      ProductName     : String(255);
+      Description     : String(500);
+      Quantity        : Decimal(15,2);
+      NetPrice        : Decimal(15,6);
+      ExtendedAmount  : Decimal(15,6);
+      Indexation      : Decimal(9,3);
+      CurrencyCode    : String(3);
 }

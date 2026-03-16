@@ -10,15 +10,15 @@ type ApplyIndexationResult {
   itemsUpdated          : Integer;
   returnedItemsCount    : Integer;
   revisionCreated       : Boolean;
-  calculatedTotalAmount : Decimal(15,2);
+  calculatedTotalAmount : Decimal(15,6);
 
   statusName            : String;
   dateCreated           : Timestamp;
   dateModified          : Timestamp;
   isActiveRevision      : Boolean;
-  totalAmount           : Decimal(15,2);
-  totalNetPrice         : Decimal(15,2);
-  currencyCode          : String;
+  totalAmount           : Decimal(15,6);
+  totalNetPrice         : Decimal(15,6);
+  currencyCode          : String(3);
 }
 
 service IndexationService {

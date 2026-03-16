@@ -48,11 +48,6 @@ annotate service.Quotes with @(
             $Type : 'UI.DataField',
             Label : 'Total Amount',
             Value : TotalAmount
-        },
-        {
-            $Type : 'UI.DataField',
-            Label : 'Currency',
-            Value : CurrencyCode
         }
     ],
 
@@ -112,9 +107,6 @@ annotate service.Quotes with @(
         ]
     },
 
-    
-    
-
     UI.Facets : [
         {
             $Type  : 'UI.ReferenceFacet',
@@ -130,17 +122,31 @@ annotate service.Quotes with @(
         }
     ]
 ) {
-    QuoteId          @Common.Label : 'Quote ID';
-    QuoteNumber      @Common.Label : 'Quote Number';
-    RevisionNumber   @Common.Label : 'Revision Number';
-    StatusName       @Common.Label : 'Status';
-    DateCreated      @Common.Label : 'Created On';
-    DateModified     @Common.Label : 'Last Changed On';
+    QuoteId @Common.Label : 'Quote ID';
+
+    QuoteNumber @Common.Label : 'Quote Number';
+
+    RevisionNumber @Common.Label : 'Revision Number';
+
+    StatusName @Common.Label : 'Status';
+
+    DateCreated @Common.Label : 'Created On';
+
+    DateModified @Common.Label : 'Last Changed On';
+
     IsActiveRevision @Common.Label : 'Active Revision';
-    TotalAmount      @Common.Label : 'Total Amount';
-    TotalNetPrice    @Common.Label : 'Total Net Price';
-    CurrencyCode     @Common.Label : 'Currency';
-    items            @Common.Label : 'Items';
+
+    TotalAmount
+      @Common.Label : 'Total Amount'
+      @Measures.ISOCurrency : CurrencyCode;
+
+    TotalNetPrice
+      @Common.Label : 'Total Net Price'
+      @Measures.ISOCurrency : CurrencyCode;
+
+    CurrencyCode @Common.Label : 'Currency';
+
+    items @Common.Label : 'Items';
 };
 
 annotate service.QuoteItems with @(
@@ -191,22 +197,30 @@ annotate service.QuoteItems with @(
             $Type : 'UI.DataField',
             Label : 'Indexation',
             Value : Indexation
-        },
-        {
-            $Type : 'UI.DataField',
-            Label : 'Currency',
-            Value : CurrencyCode
         }
     ]
 ) {
-    ItemId         @Common.Label : 'Item ID';
-    QuoteId        @Common.Label : 'Quote ID';
-    ItemNumber     @Common.Label : 'Item No.';
-    ProductName    @Common.Label : 'Product';
-    Description    @Common.Label : 'Description';
-    Quantity       @Common.Label : 'Quantity';
-    NetPrice       @Common.Label : 'Net Price';
-    ExtendedAmount @Common.Label : 'Extended Amount';
-    Indexation     @Common.Label : 'Indexation';
-    CurrencyCode   @Common.Label : 'Currency';
+    ItemId @Common.Label : 'Item ID';
+
+    QuoteId @Common.Label : 'Quote ID';
+
+    ItemNumber @Common.Label : 'Item No.';
+
+    ProductName @Common.Label : 'Product';
+
+    Description @Common.Label : 'Description';
+
+    Quantity @Common.Label : 'Quantity';
+
+    NetPrice
+      @Common.Label : 'Net Price'
+      @Measures.ISOCurrency : CurrencyCode;
+
+    ExtendedAmount
+      @Common.Label : 'Extended Amount'
+      @Measures.ISOCurrency : CurrencyCode;
+
+    Indexation @Common.Label : 'Indexation';
+
+    CurrencyCode @Common.Label : 'Currency';
 };
