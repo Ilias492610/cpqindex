@@ -1,0 +1,2 @@
+sap.ui.define(["sap/fe/test/ObjectPage"],function(e){"use strict";var t={actions:{},assertions:{}};return new e({appId:"cpq.indexation.indexationui",componentId:"QuotesObjectPage",contextPath:"/Quotes"},t)});
+//# sourceMappingURL=QuotesObjectPage.js.map

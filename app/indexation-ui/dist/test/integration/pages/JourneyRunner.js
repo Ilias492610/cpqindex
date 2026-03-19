@@ -1,0 +1,2 @@
+sap.ui.define(["sap/fe/test/JourneyRunner","cpq/indexation/indexationui/test/integration/pages/QuotesList","cpq/indexation/indexationui/test/integration/pages/QuotesObjectPage"],function(e,t,i){"use strict";var n=new e({launchUrl:sap.ui.require.toUrl("cpq/indexation/indexationui")+"/test/flp.html#app-preview",pages:{onTheQuotesList:t,onTheQuotesObjectPage:i},async:true});return n});
+//# sourceMappingURL=JourneyRunner.js.map

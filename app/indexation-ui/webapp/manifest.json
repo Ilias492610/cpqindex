@@ -26,6 +26,9 @@
       }
     }
   },
+  "sap.cloud": {
+    "service": "cpq.indexation"
+  },
   "sap.ui": {
     "technology": "UI5",
     "icons": {

@@ -1,0 +1,38 @@
+{
+  "xsappname": "cpq-indexation",
+  "tenant-mode": "dedicated",
+  "scopes": [
+    {
+      "name": "$XSAPPNAME.IndexationViewer",
+      "description": "View quotes and previews"
+    },
+    {
+      "name": "$XSAPPNAME.IndexationUser",
+      "description": "Create preview and confirm indexation"
+    }
+  ],
+  "role-templates": [
+    {
+      "name": "IndexationViewer",
+      "description": "Can view quotes and previews",
+      "scope-references": [
+        "$XSAPPNAME.IndexationViewer"
+      ]
+    },
+    {
+      "name": "IndexationUser",
+      "description": "Can create preview and apply indexation",
+      "scope-references": [
+        "$XSAPPNAME.IndexationViewer",
+        "$XSAPPNAME.IndexationUser"
+      ]
+    }
+  ],
+  "oauth2-configuration": {
+    "redirect-uris": [
+      "https://d6a33d07trial-dev-cpq-indexation-approuter.cfapps.us10-001.hana.ondemand.com/login/callback",
+      "https://d6a33d07trial-dev-cpq-indexation-approuter.cfapps.us10-001.hana.ondemand.com/**",
+      "https://*.cfapps.us10-001.hana.ondemand.com/**"
+    ]
+  }
+}

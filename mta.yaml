@@ -5,6 +5,7 @@ description: "CPQ Indexation CAP project with preview flow."
 
 parameters:
   enable-parallel-deployments: true
+  deploy_mode: html5-repo
 
 build-parameters:
   before-all:
@@ -33,6 +34,7 @@ modules:
       - name: cpq-indexation-postgres
       - name: cpq-indexation-connectivity
       - name: cpq-indexation-destination
+      - name: cpq-indexation-xsuaa
 
   - name: cpq-indexation-postgres-deployer
     type: nodejs
@@ -47,12 +49,57 @@ modules:
     requires:
       - name: cpq-indexation-postgres
 
+  - name: cpq-indexation-approuter
+    type: approuter.nodejs
+    path: approuter
+    parameters:
+      keep-existing-routes: true
+      memory: 256M
+      disk-quota: 256M
+    build-parameters:
+      builder: npm-ci
+    requires:
+      - name: cpq-indexation-xsuaa
+      - name: cpq-indexation-html5-repo-rt
+      - name: srv-api
+        group: destinations
+        properties:
+          name: srv-api
+          url: ~{srv-url}
+          forwardAuthToken: true
+
+  - name: indexation-ui
+    type: html5
+    path: app/indexation-ui
+    build-parameters:
+      builder: custom
+      commands:
+        - npm install
+        - npm run build:cf
+      build-result: dist
+      supported-platforms: []
+
+  - name: cpq-indexation-app-content
+    type: com.sap.application.content
+    path: .
+    requires:
+      - name: cpq-indexation-html5-repo-host
+        parameters:
+          content-target: true
+    build-parameters:
+      build-result: resources
+      requires:
+        - name: indexation-ui
+          artifacts:
+            - indexation-ui.zip
+          target-path: resources/
+
 resources:
   - name: cpq-indexation-postgres
     type: org.cloudfoundry.managed-service
     parameters:
       service: postgresql-db
-      service-plan: development
+      service-plan: trial
 
   - name: cpq-indexation-connectivity
     type: org.cloudfoundry.managed-service
@@ -65,3 +112,22 @@ resources:
     parameters:
       service: destination
       service-plan: lite
+
+  - name: cpq-indexation-xsuaa
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: xsuaa
+      service-plan: application
+      path: ./xs-security.json
+
+  - name: cpq-indexation-html5-repo-host
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: html5-apps-repo
+      service-plan: app-host
+
+  - name: cpq-indexation-html5-repo-rt
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service: html5-apps-repo
+      service-plan: app-runtime

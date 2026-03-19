@@ -14,6 +14,7 @@
     "@sap/ux-ui5-tooling": "1"
   },
   "scripts": {
+    "build:cf": "ui5 build --clean-dest --dest dist && cd dist && zip -r indexation-ui.zip . -x indexation-ui.zip",
     "deploy-config": "npx -p @sap/ux-ui5-tooling fiori add deploy-config cf"
   }
 }

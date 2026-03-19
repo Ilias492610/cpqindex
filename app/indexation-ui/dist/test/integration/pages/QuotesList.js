@@ -1,0 +1,2 @@
+sap.ui.define(["sap/fe/test/ListReport"],function(t){"use strict";var e={actions:{},assertions:{}};return new t({appId:"cpq.indexation.indexationui",componentId:"QuotesList",contextPath:"/Quotes"},e)});
+//# sourceMappingURL=QuotesList.js.map
