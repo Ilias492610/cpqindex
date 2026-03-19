@@ -1,9 +1,6 @@
 {
-  "welcomeFile": "/index.html",
+  "welcomeFile": "index.html",
   "authenticationMethod": "route",
-  "logout": {
-    "logoutEndpoint": "/do/logout"
-  },
   "routes": [
     {
       "source": "^/odata/(.*)$",
@@ -11,6 +8,11 @@
       "destination": "srv-api",
       "authenticationType": "xsuaa",
       "csrfProtection": false
+    },
+    {
+      "source": "^(.*)$",
+      "target": "$1",
+      "localDir": "."
     }
   ]
 }
