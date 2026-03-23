@@ -1,5 +1,7 @@
 const cds = require('@sap/cds');
-const { executeHttpRequest } = require('@sap-cloud-sdk/http-client');
+
+let CPQ;
+
 
 const DESTINATION_NAME = process.env.CPQ_DESTINATION_NAME || 'CPQ_DEST';
 const CPQ_INDEXATION_SCRIPT_PATH = normalizePath(
@@ -103,32 +105,29 @@ async function cpqRequest(method, path, body, contentType = 'application/json') 
   const started = Date.now();
 
   try {
+    if (!CPQ) {
+      CPQ = await cds.connect.to('Quotes');
+    }
+
     const headers = {
       Accept: 'application/json'
     };
 
-    const requestConfig = {
-      method,
-      url: path,
-      headers
-    };
-
-    if (body !== undefined) {
-      requestConfig.data = body;
-      if (contentType) {
-        requestConfig.headers['Content-Type'] = contentType;
-      }
+    if (body !== undefined && contentType) {
+      headers['Content-Type'] = contentType;
     }
 
-    const response = await executeHttpRequest(
-      { destinationName: DESTINATION_NAME },
-      requestConfig
-    );
+    const response = await CPQ.send({
+      method,
+      path,
+      data: body,
+      headers
+    });
 
     const duration = Date.now() - started;
     console.log(`[CPQ] ${method} ${path} -> OK (${duration} ms)`);
 
-    return response.data;
+    return response;
   } catch (error) {
     const duration = Date.now() - started;
     const message = extractErrorMessage(error);

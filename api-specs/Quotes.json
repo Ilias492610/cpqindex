@@ -1,0 +1,5168 @@
+{
+    "x-odata-version": "4.0",
+    "swagger": "2.0",
+    "info": {
+        "title": "Quotes",
+        "description": "These APIs allow clients to create and delete quotes, retrieve quote data, update, approve, or edit quotes, and so on.  On top of the actions used for managing the quote itself, it is also possible to retrieve quote revisions or different entities related to the quote or the generated documents pertaining to a specific quote. In addition, these APIs allow adding, deleting, or editing the items in the quote. These APIs are used in a variety of integrations between SAP applications and represent a standard to be used in any future integrations of the SAP Configure Price Quote quote with other applications.",
+        "version": "1.0"        
+    },
+    "x-sap-shortText": "Allows you to successfully integrate and manage the Quote 2.0 engine.",
+    "x-servers": [{
+        "url": "https://{Customer Environment}.webcomcpq.com",
+        "description": "SAP Configure Price Quote production",
+        "templates": {
+            "Customer Environment": {
+                "description": "Customer environment"
+            }
+        }
+    }],
+    "host": "hostname",
+    "securityDefinitions": {
+        "Basic": {
+            "type": "basic",
+            "description": "Basic HTTP Authentication."
+        },
+        "apiKeyAuth": {
+            "type": "apiKey",
+            "in": "header",
+            "name": "Bearer Authentication"
+        },
+        "basicAuth": {
+      "type": "basic",
+      "description": "Basic HTTP Authentication <br> <br>"
+    },
+    "bearerAuth": {
+      "type": "apiKey",
+      "description": "Bearer Authentication <br> <br>",
+      "name": "Bearer Token",
+      "in": "header"
+    },
+    "jwtAuth": {
+      "type": "apiKey",
+      "description": "JWT Authentication <br> <br>",
+      "name": "JWT Token",
+      "in": "header"
+    },
+    "sessionAuth": {
+      "type": "apiKey",
+      "description": "Stateful <br> (ASP.NET_SessionId and WebCom-lbal cookies need to be included) <br> For Posts requests X-CSRF-Token cookie is needed as well. <br> <br>",
+      "name": "ASP.NET_SessionId",
+      "in": "header"
+    },
+    "bearerWithScopesAuth": {
+      "type": "apiKey",
+      "description": "<para>Bearer Authentication with ASP.NET_SessionId for performance reasons.</para> <para>This API requires configurations_user or configurations_admin scope.<para>",
+      "name": "Bearer Token with ASP.NET_SessionId and Scopes",
+      "in": "header"
+    }
+    },
+    "security": [{
+        "apiKeyAuth": [ ]
+    }, {
+        "Basic": []
+    }],
+    "externalDocs": {
+        "description": "Complete documentation on SAP Configure Price Quote",
+        "url": "https://help.sap.com/viewer/product/SAP_CPQ"
+    },
+    "paths":{"/api/v1/quotes/{quoteId}/revisions": {
+        "get": {
+          "tags": [
+            "Quotes"
+          ],
+          "summary": "Gets quote revisions.",
+          "operationId": "Quotes_GetQuoteRevisions",
+          "consumes": [],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "quoteId",
+              "in": "path",
+              "description": "Quote ID",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "List of quote revisions.",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Webcom.API.Public.Quote.VM.QuoteRevisionVM"
+                }
+              }
+            },
+            "403": {
+              "description": "The logged user doesn't have the permissions to view this quote.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "404": {
+              "description": "Quote not found.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "500": {
+              "description": "Internal server error.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            }
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            },
+            {
+              "jwtAuth": []
+            },
+            {
+              "basicAuth": []
+            }
+          ]
+        }
+      },
+      "/api/v1/quotes/{quoteId}/documents": {
+        "get": {
+          "tags": [
+            "Quotes"
+          ],
+          "summary": "Gets the documents generated from the quote.",
+          "operationId": "Quotes_GetGeneratedDocuments",
+          "consumes": [],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "quoteId",
+              "in": "path",
+              "description": "Quote ID",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "List of generated documents",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Webcom.API.Public.Quote.VM.GeneratedDocumentInfoVM"
+                }
+              }
+            },
+            "403": {
+              "description": "The logged user doesn't have the permissions to view this quote.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "404": {
+              "description": "Quote not found.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "500": {
+              "description": "Internal server error.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            }
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            },
+            {
+              "jwtAuth": []
+            },
+            {
+              "basicAuth": []
+            }
+          ]
+        }
+      },
+      "/api/v1/quotes/{quoteId}/attachments": {
+        "get": {
+          "tags": [
+            "Quotes"
+          ],
+          "summary": "Gets Quote's attachments",
+          "operationId": "Quotes_GetQuoteAttachments",
+          "consumes": [],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "quoteId",
+              "in": "path",
+              "description": "",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "List of Quote attachments.",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Webcom.API.Public.Quote.VM.AttachmentInfoVM"
+                }
+              }
+            },
+            "403": {
+              "description": "The logged user doesn't have the permissions to view this quote.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "500": {
+              "description": "Internal server error.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            }
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            },
+            {
+              "jwtAuth": []
+            },
+            {
+              "basicAuth": []
+            }
+          ]
+        }
+      },
+      "/api/v1/quotes/{quoteId}/attachments/{attachmentId}": {
+        "get": {
+          "tags": [
+            "Quotes"
+          ],
+          "summary": "Gets prepeared attachment for download",
+          "operationId": "Quotes_DownloadAttachment",
+          "consumes": [],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "quoteId",
+              "in": "path",
+              "description": "Id of Quote where attachment is located",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            },
+            {
+              "name": "attachmentId",
+              "in": "path",
+              "description": "Id of attachment",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Download a generated file"
+            },
+            "403": {
+              "description": "The logged user doesn't have the permissions to view this quote.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "500": {
+              "description": "Internal server error.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            }
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            },
+            {
+              "jwtAuth": []
+            },
+            {
+              "basicAuth": []
+            }
+          ]
+        }
+      },
+      "/api/v1/quotes/{quoteId}/documents/{documentId}/file": {
+        "get": {
+          "tags": [
+            "Quotes"
+          ],
+          "summary": "Gets prepared document for download",
+          "operationId": "Quotes_DownloadFile",
+          "consumes": [],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "quoteId",
+              "in": "path",
+              "description": "Quote ID",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            },
+            {
+              "name": "documentId",
+              "in": "path",
+              "description": "Document ID",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Download a generated file"
+            },
+            "403": {
+              "description": "The logged user doesn't have the permissions to view this quote.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "404": {
+              "description": "File not found.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "500": {
+              "description": "Internal server error.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            }
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            },
+            {
+              "jwtAuth": []
+            },
+            {
+              "basicAuth": []
+            }
+          ]
+        }
+      },
+      "/api/v1/quotes/{quoteId}/actions/{actionId}/invoke": {
+        "post": {
+          "tags": [
+            "Quotes"
+          ],
+          "summary": "Executes the action (either standard or custom, both are supported).",
+          "description": "The following actions don’t need additional parameters: <b>New Active Revision (actionId: 64) </b>, <b>Set Active (actionId: 15) </b>,<b>Copy (actionId: 4)</b>, <b>Delete (actionId: 2)</b>, <b>Place Order (actionId: 10)</b>, <b>Create/Update Objects From Quote Items (actionId: 2517)</b>, <b>Create Assets (actionId: 54)</b>, <b>Create Update SAP Sales Quote (actionId: 1811)</b>, <b>Create/Update Opportunity (actionId: 2500)</b>, <b>Create Custom Object From Quote (actionId: 2519)</b>, <b>CreateQuoteInCRM (actionId: 2523)</b>, <b>Detach From Opportunity (actionId: 36)</b>, <b>Upgrade to New Product Version (actionId: 51)</b>, <b>Post Quote Notes Into Account Chatter (actionId: 57)</b>, <b>Post Quote Notes Into Opportunity Chatter (actionId: 55)</b>, <b>Send Document to CRM (actionId: 1655)</b>, <b>Update SAP Opportunity (actionId: 1810)</b>, <b>Attach Document To SAP Opportunity (actionId: 1820)</b>, <b>Attach Document To SAP Sales Quote (actionId: 1821)</b>, <b>Attach Document To SAP Opportunity And Sales Quote (actionId: 1822)</b>, <b>Place order to ERP (actionId: 1823)</b>, <b>Update Sales Quote (actionId: 1825)</b>, <b>Make Primary (actionId: 73)</b> and <b>Release Quote To SAP Commerce (actionId: 1826)</b>.\r\n<br /><br />The following actions require additional parameters in the request body:\r\n<br />- <b>New Active Revision (actionId: 64) </b> should contain the <b>NewRevisionName</b> parameter. This parameter is optional, and it contains the name of the newly created revision.\r\n<br />- <b>Reassign (actionId: 6) </b> must contain the <b>NewUserId</b> parameter. This parameter is mandatory, and it contains the ID of the user to whom the quote should be assigned.\r\n<br />- <b>Change Status (actionId: 12) </b> must contain the <b>NewStatusId</b> parameter. This parameter is mandatory, and it contains the ID of the new status of the quote.\r\n<br />- <b>Integration Change Quote Status (actionId: 1922) </b> must contain the <b>NewStatusId</b> parameter. This parameter is mandatory, and it contains the ID of the new status of the quote.  <b>NewStatusId</b> must correspond with the Workflow settings. Available statuses are Order Placed, Order Created With Errors and Creating Order Failed. The Integration Change Quote Status can also contain the following optional parameters: <b>SalesOrderID</b>, which contains the ID of the sales order, and <b>RemovePreviousMessages</b>, which is a boolean (default value is false) used to remove existing error messages from the quote. The <b>ErrorMessage</b> that is logged after Creating Order Failed or Order Created With Errors is triggered from SAP Billing and Revenue Innovation Management. The message describes the issue that caused the quote synchronization to fail. \r\n<br />- <b>Order Status Update (actionId: 1923) </b> must contain the <b>SalesOrderID</b> parameter. This parameter is mandatory, and it contains the ID of the sales order.\r\n<br />- <b>Creating Order Failed (actionId: 1924) </b> must contains these parameters: <b>SalesOrderID</b> parameter is mandatory, and it contains the ID of the sales order. <b>ErrorMessage</b> that is being logged after Creating Order Failed is triggered from Billing Revenue and Innovation Management.The message describes the issue that caused the quote synchronization to fail.\r\n<br />- <b>Release Quote And Proposal To SAP Commerce (actionId: 1824) </b> must contain the <b>ProposalMessage</b> parameter. This parameter is required, and it contains the message that will be sent with the quote and the proposal.\r\n<br />- <b>Submit for Approval (actionId: 25) </b> must contain the list of approval rules. Each rule must contain these parameters: <b>Rule</b> contains the rule ID, <b>Approvers</b> contains the list of approvers (user IDs) and <b>Comment</b> contains the rule comment.\r\n<br />- <b>Approve or Reject Quote (Approve Quote Action Id: 26, Reject Quote Action Id: 27) </b> must contain the list of <b>ApproversResponsibilities</b>. Each responsibility must contain these parameters: <b>ResponsibilityId</b> contains the Responsibility ID, <b>Comment</b> contains the Responsibility comment.\r\n<br />- <b>Get Status of Placed Order (actionId: 1926) </b> must contain these parameters: <b>SalesOrderID</b> parameter is mandatory, and it contains the ID of the sales order.\r\n<br />- <b>Retract approval (actionId: 53) </b> must contain the <b>Comment</b> parameter. Payload example : { \"Comment\" : \"some comment\" }",
+          "operationId": "Quotes_ExecuteAction",
+          "consumes": [
+            "application/json",
+            "text/json",
+            "application/x-www-form-urlencoded"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "quoteId",
+              "in": "path",
+              "description": "The quote identifier.",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            },
+            {
+              "name": "actionId",
+              "in": "path",
+              "description": "The action identifier.",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            },
+            {
+              "name": "request",
+              "in": "body",
+              "description": "The request",
+              "required": true,
+              "schema": {
+                "type": "object"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "New revision and New active revision actions return the NewQuoteId and other actions return an empty response. ",
+              "schema": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.NewQuoteVMResponse"
+              }
+            },
+            "403": {
+              "description": "The logged user doesn't have the permissions to view this quote.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "404": {
+              "description": "Action not found",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "500": {
+              "description": "Internal server error."
+            }
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            },
+            {
+              "jwtAuth": []
+            },
+            {
+              "basicAuth": []
+            }
+          ]
+        }
+      },
+      "/api/v1/quotes/{quoteId}/quoteTables/{tableName}/actions/{actionId}/invoke": {
+        "post": {
+          "tags": [
+            "Quotes"
+          ],
+          "summary": "Executes the Quote table action (either standard or custom, both are supported).",
+          "description": "<br />\r\n<br />The following actions require additional parameters in the request body:\r\n            <br />- <b>Copy row (actionId: 34) </b> must contain the <b>RowId</b> parameter.",
+          "operationId": "Quotes_ExecuteQuoteTableAction",
+          "consumes": [
+            "application/json",
+            "text/json",
+            "application/x-www-form-urlencoded"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "quoteId",
+              "in": "path",
+              "description": "The quote identifier.",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            },
+            {
+              "name": "tableName",
+              "in": "path",
+              "description": "The request.",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "actionId",
+              "in": "path",
+              "description": "The action identifier.",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            },
+            {
+              "name": "request",
+              "in": "body",
+              "description": "The request",
+              "required": true,
+              "schema": {
+                "type": "object"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Executes Quote table action and updates Quote"
+            },
+            "403": {
+              "description": "The logged user doesn't have the permissions to view this quote.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "404": {
+              "description": "Occurs in the following scenarios: Quote not found Quote Table doesn't exist! Quote Table Custom Action doesn't exist! On copy row action - Quote Table Row not found",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "500": {
+              "description": "Internal server error."
+            }
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            },
+            {
+              "jwtAuth": []
+            },
+            {
+              "basicAuth": []
+            }
+          ]
+        }
+      },
+      "/api/v1/quotes/{quoteId}/quoteTables/{tableName}/actions": {
+        "get": {
+          "tags": [
+            "Quotes"
+          ],
+          "summary": "Get custom actions.",
+          "operationId": "Quotes_GetCustomActions",
+          "consumes": [],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "quoteId",
+              "in": "path",
+              "description": "The quote identifier.",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            },
+            {
+              "name": "tableName",
+              "in": "path",
+              "description": "The request.",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Execute Custom Action",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Webcom.API.Public.Quote.VM.QuoteTableActionVM"
+                }
+              }
+            },
+            "403": {
+              "description": "The logged user doesn't have the permissions to view this quote.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "404": {
+              "description": "Quote Table doesn't exist!",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "500": {
+              "description": "Internal server error."
+            }
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            },
+            {
+              "jwtAuth": []
+            },
+            {
+              "basicAuth": []
+            }
+          ]
+        }
+      },
+      "/api/v1/quotes/{quoteId}/actions": {
+        "get": {
+          "tags": [
+            "Quotes"
+          ],
+          "summary": "Gets available standard and custom actions for the quote.",
+          "operationId": "Quotes_GetAvailableActions",
+          "consumes": [],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "quoteId",
+              "in": "path",
+              "description": "The quote identifier.",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "List of available actions",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Webcom.API.Public.Quote.VM.WorkflowActionVM"
+                }
+              }
+            },
+            "403": {
+              "description": "The logged user doesn't have the permissions to view this quote.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "500": {
+              "description": "Internal server error."
+            }
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            },
+            {
+              "jwtAuth": []
+            },
+            {
+              "basicAuth": []
+            }
+          ]
+        }
+      },
+      "/api/v1/quotes": {
+        "post": {
+          "tags": [
+            "Quotes"
+          ],
+          "summary": "Creates new quote.",
+          "description": "If <b>MarketId</b> is not provided, the system will resolve MarketId based on provided <b>MarketCode</b> and <b>CurrencyCode</b>, if none are provided, the default market will be used for the logged in user.\r\n<b>CustomerId</b> takes priority over <b>CustomerCode</b> so if both are provided, the system disregards the <b>CustomerCode</b> and looks for the customer based on the <b>CustomerId</b>.\r\nCustomer <b>RoleType</b> accepts <em>1</em> for billto customer, <em>2</em> for shipto customer, and <em>3</em> for enduser.\r\n<br /><b>PricebookId</b> takes priority over <b>DistributionChannel</b> so if both are provided, the system disregards the <b>DistributionChannel</b> and looks for the pricebook based on the <b>PricebookId</b>.\r\nSAP CPQ looks for the pricebook with the respective <b>DistributionChannel</b> in the market provided in <b>MarketId</b>.",
+          "operationId": "Quotes_CreateNewQuote",
+          "consumes": [
+            "application/json",
+            "text/json",
+            "application/xml",
+            "text/xml",
+            "application/x-www-form-urlencoded"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "quoteVmRequest",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.QuoteVMRequest"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Id and Number of created quote",
+              "schema": {
+                "$ref": "#/definitions/SAP.CPQ.API.Quote.VM.CreateNewQuoteVMResponse"
+              }
+            },
+            "404": {
+              "description": "Quote not found.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            }
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            },
+            {
+              "jwtAuth": []
+            },
+            {
+              "basicAuth": []
+            }
+          ]
+        }
+      },
+      "/api/v1/quotes/{quoteId}/comments": {
+        "get": {
+          "tags": [
+            "Quotes"
+          ],
+          "summary": "Get collaboration comments for the quote.",
+          "operationId": "Quotes_GetQuoteCollaborationComments",
+          "consumes": [],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "quoteId",
+              "in": "path",
+              "description": "The quote identifier.",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "List of quote's comments",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Webcom.API.Public.Quote.VM.QuoteCommentVM"
+                }
+              }
+            },
+            "403": {
+              "description": "The logged user doesn't have the permissions to view this quote.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "404": {
+              "description": "Quote not found.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "500": {
+              "description": "Internal server error.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            }
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            },
+            {
+              "jwtAuth": []
+            },
+            {
+              "basicAuth": []
+            }
+          ]
+        },
+        "post": {
+          "tags": [
+            "Quotes"
+          ],
+          "summary": "Post collaboration comments for the quote.",
+          "operationId": "Quotes_PostQuoteCollaborationComments",
+          "consumes": [
+            "application/json",
+            "text/json",
+            "application/xml",
+            "text/xml",
+            "application/x-www-form-urlencoded"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "quoteId",
+              "in": "path",
+              "description": "The quote identifier.",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            },
+            {
+              "name": "comments",
+              "in": "body",
+              "description": "List of quote comment objects",
+              "required": true,
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Webcom.API.Public.Quote.VM.QuoteCommentVM"
+                }
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Save quote's collaboration comments"
+            },
+            "403": {
+              "description": "The logged user doesn't have the permissions to view this quote.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "404": {
+              "description": "Quote not found.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "500": {
+              "description": "Internal server error.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            }
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            },
+            {
+              "jwtAuth": []
+            },
+            {
+              "basicAuth": []
+            }
+          ]
+        }
+      },
+      "/api/v1/quotes/{quoteId}/items/{itemId}/comments": {
+        "get": {
+          "tags": [
+            "Quotes"
+          ],
+          "summary": "Gets the quote item comments.",
+          "operationId": "Quotes_GetQuoteItemComments",
+          "consumes": [],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "quoteId",
+              "in": "path",
+              "description": "The quote identifier.",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            },
+            {
+              "name": "itemId",
+              "in": "path",
+              "description": "The item identifier.",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "List of quote's item comments",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Webcom.API.Public.Quote.VM.QuoteCommentVM"
+                }
+              }
+            },
+            "403": {
+              "description": "The logged user doesn't have the permissions to view this quote.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "404": {
+              "description": "Quote or quote item not found.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "500": {
+              "description": "Internal server error.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            }
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            },
+            {
+              "jwtAuth": []
+            },
+            {
+              "basicAuth": []
+            }
+          ]
+        },
+        "post": {
+          "tags": [
+            "Quotes"
+          ],
+          "summary": "Posts quote item comments.",
+          "operationId": "Quotes_PostQuoteItemComments",
+          "consumes": [
+            "application/json",
+            "text/json",
+            "application/xml",
+            "text/xml",
+            "application/x-www-form-urlencoded"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "quoteId",
+              "in": "path",
+              "description": "The quote identifier.",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            },
+            {
+              "name": "itemId",
+              "in": "path",
+              "description": "The item identifier.",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            },
+            {
+              "name": "comments",
+              "in": "body",
+              "description": "The list of comments.",
+              "required": true,
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Webcom.API.Public.Quote.VM.QuoteCommentVM"
+                }
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Save quote's item comments"
+            },
+            "403": {
+              "description": "The logged user doesn't have the permissions to view this quote.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "404": {
+              "description": "Quote or quote item not found.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "500": {
+              "description": "Internal server error.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            }
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            },
+            {
+              "jwtAuth": []
+            },
+            {
+              "basicAuth": []
+            }
+          ]
+        }
+      },
+      "/api/v1/quotes/{quoteId}": {
+        "get": {
+          "tags": [
+            "Quotes"
+          ],
+          "summary": "Gets the quote.",
+          "description": "The following query parameter is supported: <br />\r\n$expand: use this parameter to specify the comma separated list of sub nodes which need to be included in the response.<br />\r\nPossible value for $expand is PricingConditions.",
+          "operationId": "Quotes_GetQuote",
+          "consumes": [],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "quoteId",
+              "in": "path",
+              "description": "The quote identifier.",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Quote data",
+              "schema": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.QuoteVMResponse"
+              }
+            },
+            "400": {
+              "description": "Occurs in the following scenarios: The value for keyword $expand is invalid. The value of $expand must not be empty.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "403": {
+              "description": "Logged user doesn't have permission to view this quote",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "404": {
+              "description": "Quote not found",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "500": {
+              "description": "Internal server error.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            }
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            },
+            {
+              "jwtAuth": []
+            },
+            {
+              "basicAuth": []
+            }
+          ]
+        },
+        "delete": {
+          "tags": [
+            "Quotes"
+          ],
+          "summary": "Delete Quote",
+          "description": "Deletes Quote following standard Workflow procedures.",
+          "operationId": "Quotes_DeleteQuote",
+          "consumes": [],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "quoteId",
+              "in": "path",
+              "description": "The quote identifier.",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Delete quote"
+            },
+            "400": {
+              "description": "Occurs in the following scenarios: Quote status not found. Quote is blocked for deletion. Action is not available in this status. An order has been placed on this cart and it can not be deleted. Action is not executed.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "403": {
+              "description": "Logged user doesn't have permission to delete this quote",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "404": {
+              "description": "Quote not found",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "500": {
+              "description": "Internal server error.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            }
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            },
+            {
+              "jwtAuth": []
+            },
+            {
+              "basicAuth": []
+            }
+          ]
+        },
+        "patch": {
+          "tags": [
+            "Quotes"
+          ],
+          "summary": "Update Quote standard and custom fields",
+          "description": "All quote standard and custom fields need to be editable before sending request.<br />",
+          "operationId": "Quotes_UpdateQuote",
+          "consumes": [
+            "application/json",
+            "text/json",
+            "application/xml",
+            "text/xml",
+            "application/x-www-form-urlencoded"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "quoteId",
+              "in": "path",
+              "description": "The quote identifier.",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            },
+            {
+              "name": "quoteFields",
+              "in": "body",
+              "description": "Quote fields (standard and/or custom) to patch",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "object"
+                },
+                "example": {
+                  "FirstName": "John",
+                  "LastName": "Doe",
+                  "CustomField1": "Custom field  1 value"
+                }
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Update quote"
+            },
+            "400": {
+              "description": "Occurs in the following scenarios: Request contains fields whose patching is not allowed. Provided Origin value is not valid. Provided pricebook is not visible for the current user. Provided combination for Market ID and Pricebook ID is not valid. Provided attribute value is not valid. Quote field is not editable. The date format in the custom field is incorrect. The attribute format in the custom field is incorrect.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "500": {
+              "description": "Internal server error.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            }
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            },
+            {
+              "jwtAuth": []
+            },
+            {
+              "basicAuth": []
+            }
+          ]
+        }
+      },
+      "/api/v1/quotes/{quoteId}/customers/{roleId}": {
+        "patch": {
+          "tags": [
+            "Quotes"
+          ],
+          "summary": "Updates Customer standard and custom fields on Quote.",
+          "description": "There are three types of Customers (roleId):<br />\r\n - Bill To (roleId 1) <br />\r\n - Ship To (roleId 2) <br />\r\n - End User (roleId 3) <br />\r\n \r\nCustomer needs to be editable and needs to be added to Quote before sending request.<br />",
+          "operationId": "Quotes_UpdateCustomers",
+          "consumes": [
+            "application/json",
+            "text/json",
+            "application/xml",
+            "text/xml",
+            "application/x-www-form-urlencoded"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "quoteId",
+              "in": "path",
+              "description": "The quote identifier.",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            },
+            {
+              "name": "roleId",
+              "in": "path",
+              "description": "The role identifier.",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            },
+            {
+              "name": "customerFields",
+              "in": "body",
+              "description": "Quote fields (standard and/or custom) to patch",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "example": {
+                  "FirstName": "John",
+                  "LastName": "Doe",
+                  "CustomField1": "Custom field  1 value"
+                }
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Update customers on quote."
+            },
+            "400": {
+              "description": "Occurs in the following scenarios: Invalid request body. Unknown role type.  Customer not editable.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "403": {
+              "description": "Logged user doesn't have permission to edit this quote",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "404": {
+              "description": "Quote not found",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            }
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            },
+            {
+              "jwtAuth": []
+            },
+            {
+              "basicAuth": []
+            }
+          ]
+        }
+      },
+      "/api/v1/quotes/{quoteId}/items": {
+        "get": {
+          "tags": [
+            "Quotes"
+          ],
+          "summary": "Get the items from the quote.",
+          "description": "This endpoint supports OData filtering. <br />\r\nThe following attribute properties are available to OData, and they have a specific support for the $filter option. <br />\r\n            \r\n    changeprocessgroupcode - $filter eq, ne, like\r\n    contractchangeprocessingstatus - $filter eq, lt, gt, ge, le\r\n            \r\nAdditional OData options are available for these properties:\r\n            \r\n    $orderby={properties name} {desc/asc}\r\n    $top={number, max 100}\r\n    $skip={number}\r\n    $expand=SelectedAttributes\r\n    $expand=PricingConditions\r\n    $expand=ExternalConfigurations",
+          "operationId": "Quotes_GetItems",
+          "consumes": [],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "quoteId",
+              "in": "path",
+              "description": "The unique quote identifier.",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "List of quote's items.",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Webcom.API.Public.Quote.VM.QuoteItemSapStandardVm"
+                }
+              }
+            },
+            "403": {
+              "description": "The logged user doesn't have the permissions to view this quote.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "404": {
+              "description": "Quote not found.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "500": {
+              "description": "Internal server error.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            }
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            },
+            {
+              "jwtAuth": []
+            },
+            {
+              "basicAuth": []
+            }
+          ]
+        },
+        "post": {
+          "tags": [
+            "Quotes"
+          ],
+          "summary": "Add items to quote",
+          "description": "If both <b>PartNumber</b> and <b>ProductSystemId</b> are provided, the system disregards the <b>PartNumber</b> and looks for the item based on the <b>ProductSystemId</b> as this field takes priority.",
+          "operationId": "Quotes_AddItemsToQuote",
+          "consumes": [
+            "application/json",
+            "text/json",
+            "application/xml",
+            "text/xml",
+            "application/x-www-form-urlencoded"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "quoteId",
+              "in": "path",
+              "description": "The quote identifier.",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            },
+            {
+              "name": "items",
+              "in": "body",
+              "description": "List of items.",
+              "required": true,
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Webcom.API.Public.Quote.VM.QuoteItemRequestVM"
+                },
+                "example": [
+                  {
+                    "Quantity": 1,
+                    "ProductSystemId": "product_system_Id"
+                  }
+                ]
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "List of created quote's items",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/SAP.CPQ.Quote.Common.DTO.RFQ.QuoteItemResponse"
+                }
+              }
+            },
+            "400": {
+              "description": "Occurs in the following scenarios: Invalid item parameters. Maximum number of items per request exceeds 100. Discount change is not allowed. ",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "404": {
+              "description": "Quote or quote item not found.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "500": {
+              "description": "Internal server error.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            }
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            },
+            {
+              "jwtAuth": []
+            },
+            {
+              "basicAuth": []
+            }
+          ]
+        }
+      },
+      "/api/v1/quotes/{quoteId}/items/{itemId}": {
+        "get": {
+          "tags": [
+            "Quotes"
+          ],
+          "summary": "Get the specific item from the quote.",
+          "description": "The following query parameter is supported: <br />\r\n$expand: use this parameter to specify the comma separated list of sub nodes which need to be included in the response.<br />\r\nPossible values for $expand are: SelectedAttributes, PricingConditions, ExternalConfigurations.",
+          "operationId": "Quotes_GetItem",
+          "consumes": [],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "quoteId",
+              "in": "path",
+              "description": "The unique quote identifier.",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            },
+            {
+              "name": "itemId",
+              "in": "path",
+              "description": "The unique item identifier.",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Gets the specific quote's item.",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Webcom.API.Public.Quote.VM.QuoteItemSapStandardVm"
+                }
+              }
+            },
+            "403": {
+              "description": "The logged user doesn't have the permissions to view this quote.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "404": {
+              "description": "Quote or quote item not found."
+            }
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            },
+            {
+              "jwtAuth": []
+            },
+            {
+              "basicAuth": []
+            }
+          ]
+        },
+        "delete": {
+          "tags": [
+            "Quotes"
+          ],
+          "summary": "Delete Quote Item",
+          "operationId": "Quotes_DeleteItem",
+          "consumes": [],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "quoteId",
+              "in": "path",
+              "description": "The quote identifier.",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            },
+            {
+              "name": "itemId",
+              "in": "path",
+              "description": "The item identifier.",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Delete quote's item"
+            },
+            "403": {
+              "description": "Logged user doesn't have permission to edit this quote or delete item action isn't available.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "404": {
+              "description": "Quote or quote item not found.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "500": {
+              "description": "Internal server error.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            }
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            },
+            {
+              "jwtAuth": []
+            },
+            {
+              "basicAuth": []
+            }
+          ]
+        },
+        "patch": {
+          "tags": [
+            "Quotes"
+          ],
+          "summary": "Update Quote item fields and custom fields.",
+          "description": "All quote item fields and custom fields need to be editable before sending request.<br />\r\n\r\nFields with invalid values are returned in the response in the following format:<br />\r\n```\r\n    {\r\n        \"ItemFields\": {\r\n            \"FieldName\": \"ErrorMessage\",\r\n            \"FieldName2\": \"ErrorMessage\"\r\n        }\r\n     }\r\n```\r\nFields with valid values will be updated and not included in the response.\r\n\r\nQuote item custom fields of type Date need to be in the format \"yyyy-MM-dd\".",
+          "operationId": "Quotes_UpdateItem",
+          "consumes": [
+            "application/json",
+            "text/json",
+            "application/xml",
+            "text/xml",
+            "application/x-www-form-urlencoded"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "quoteId",
+              "in": "path",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            },
+            {
+              "name": "itemId",
+              "in": "path",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            },
+            {
+              "name": "itemFields",
+              "in": "body",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "example": {
+                  "Quantity": "1",
+                  "QuoteItemCustomField": "string"
+                }
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Update quote's item",
+              "schema": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.ItemsUpdateResponse"
+              }
+            },
+            "400": {
+              "description": "Message body is not in correct format.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "403": {
+              "description": "Logged user doesn't have permission to edit this quote or field isn't editable.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "404": {
+              "description": "Quote or quote item not found.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "500": {
+              "description": "Internal server error.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            }
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            },
+            {
+              "jwtAuth": []
+            },
+            {
+              "basicAuth": []
+            }
+          ]
+        }
+      },
+      "/api/v1/quotes/{quoteId}/productTypes": {
+        "get": {
+          "tags": [
+            "Quotes"
+          ],
+          "summary": "Gets product types",
+          "description": "The following properties are available for pagination: <br />\r\n            \r\n     $orderby={properties name} {desc/asc}\r\n     $top={number} {default is 10, max is 100}\r\n     $skip={number}",
+          "operationId": "Quotes_GetProductTypes",
+          "consumes": [],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "quoteId",
+              "in": "path",
+              "description": "",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Gets quote's product types",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Webcom.API.Public.Quote.VM.ProductTypeVM"
+                }
+              }
+            },
+            "400": {
+              "description": "Invalid pagination parameters.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "403": {
+              "description": "The logged user doesn't have the permissions to view this quote.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "404": {
+              "description": "Quote not found.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "500": {
+              "description": "Internal server error.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            }
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            },
+            {
+              "jwtAuth": []
+            },
+            {
+              "basicAuth": []
+            }
+          ]
+        }
+      },
+      "/api/v1/quotes/{quoteId}/productTypes/$count": {
+        "get": {
+          "tags": [
+            "Quotes"
+          ],
+          "summary": "Gets product types count",
+          "operationId": "Quotes_GetProductTypesCount",
+          "consumes": [],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "quoteId",
+              "in": "path",
+              "description": "",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Gets quote's product types",
+              "schema": {
+                "format": "int32",
+                "type": "integer"
+              }
+            },
+            "403": {
+              "description": "The logged user doesn't have the permissions to view this quote.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "404": {
+              "description": "Quote not found.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "500": {
+              "description": "Internal server error.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            }
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            },
+            {
+              "jwtAuth": []
+            },
+            {
+              "basicAuth": []
+            }
+          ]
+        }
+      },
+      "/api/v1/quotes/{quoteId}/quoteTables/{tableName}/rows": {
+        "get": {
+          "tags": [
+            "Quotes"
+          ],
+          "summary": "Get Quote Table",
+          "description": "The following properties are available for pagination: <br />\r\n            \r\n     $top={number} {default is 10}\r\n     $skip={number} {default is 0)",
+          "operationId": "Quotes_GetQuoteTableRows",
+          "consumes": [],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "quoteId",
+              "in": "path",
+              "description": "The quote identifier.",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            },
+            {
+              "name": "tableName",
+              "in": "path",
+              "description": "The quote table name.",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Get rows of quote table with pagination",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Webcom.API.Public.Quote.VM.QuoteTableRowVM"
+                }
+              }
+            },
+            "403": {
+              "description": "The logged user doesn't have the permissions to view this quote.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "404": {
+              "description": "Quote Table doesn't exist!",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "500": {
+              "description": "Internal server error.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            }
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            },
+            {
+              "jwtAuth": []
+            },
+            {
+              "basicAuth": []
+            }
+          ]
+        },
+        "post": {
+          "tags": [
+            "Quotes"
+          ],
+          "summary": "Inserts new row in quote table.",
+          "operationId": "Quotes_AddQuoteTableRows",
+          "consumes": [
+            "application/json",
+            "text/json",
+            "application/xml",
+            "text/xml",
+            "application/x-www-form-urlencoded"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "quoteId",
+              "in": "path",
+              "description": "",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            },
+            {
+              "name": "tableName",
+              "in": "path",
+              "description": "",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "quoteTableRows",
+              "in": "body",
+              "description": "",
+              "required": true,
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/SAP.CPQ.Quote.Common.DTO.QuoteTableRowRequest"
+                }
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "New rows are successfully inserted.",
+              "schema": {
+                "$ref": "#/definitions/SAP.CPQ.API.Quote.VM.QuoteTableRowGenericResponseVM"
+              }
+            },
+            "400": {
+              "description": "Occurs in the following scenarios: the column from the request is not part of the quote table, column data type is incorrect, or the request body is empty.",
+              "schema": {
+                "$ref": "#/definitions/SAP.CPQ.API.Quote.VM.QuoteTableRowGenericResponse"
+              }
+            },
+            "403": {
+              "description": "The logged user doesn't have the permissions to view this quote.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "404": {
+              "description": "Quote Table doesn't exist!",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "500": {
+              "description": "Internal server error.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            }
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            },
+            {
+              "jwtAuth": []
+            },
+            {
+              "basicAuth": []
+            }
+          ]
+        }
+      },
+      "/api/v1/quotes/{quoteId}/quoteTables/{tableName}/rows/{rowId}": {
+        "delete": {
+          "tags": [
+            "Quotes"
+          ],
+          "summary": "Delete Quote Table Row",
+          "operationId": "Quotes_DeleteQuoteTableRow",
+          "consumes": [],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "quoteId",
+              "in": "path",
+              "description": "The quote identifier.",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            },
+            {
+              "name": "tableName",
+              "in": "path",
+              "description": "The quote table name.",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "rowId",
+              "in": "path",
+              "description": "The row id",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Delete Quote Table Row"
+            },
+            "403": {
+              "description": "The logged user doesn't have the permissions to view this quote.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "404": {
+              "description": "Quote Table doesn't exist!",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "405": {
+              "description": "User doesn't have the permissions to perform the Delete row action on quote tables.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "500": {
+              "description": "Internal server error.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            }
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            },
+            {
+              "jwtAuth": []
+            },
+            {
+              "basicAuth": []
+            }
+          ]
+        },
+        "patch": {
+          "tags": [
+            "Quotes"
+          ],
+          "summary": "Updates single row in quote table.",
+          "operationId": "Quotes_UpdateQuoteTableRows",
+          "consumes": [
+            "application/json",
+            "text/json",
+            "application/xml",
+            "text/xml",
+            "application/x-www-form-urlencoded"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "quoteId",
+              "in": "path",
+              "description": "",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            },
+            {
+              "name": "tableName",
+              "in": "path",
+              "description": "",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "rowId",
+              "in": "path",
+              "description": "",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            },
+            {
+              "name": "quoteTableCellRequestVM",
+              "in": "body",
+              "description": "",
+              "required": true,
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/SAP.CPQ.Quote.Common.DTO.QuoteTableCellRequestObject"
+                }
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Quote table row is updated successfully.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.QuoteTableRowResponseVM"
+              }
+            },
+            "400": {
+              "description": "Occurs in the following scenarios: the column from the request is not part of the quote table, column data type is incorrect, or the request body is empty.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.QuoteTableRowResponseVM"
+              }
+            },
+            "403": {
+              "description": "The logged user doesn't have the permissions to view this quote.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "404": {
+              "description": "Quote Table doesn't exist!",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "500": {
+              "description": "Internal server error.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            }
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            },
+            {
+              "jwtAuth": []
+            },
+            {
+              "basicAuth": []
+            }
+          ]
+        }
+      },
+      "/api/v1/quotes/{quoteId}/quoteTables/{tableName}/rows/$count": {
+        "get": {
+          "tags": [
+            "Quotes"
+          ],
+          "summary": "Get Quote Table",
+          "operationId": "Quotes_GetQuoteTableTotalNumberOfRows",
+          "consumes": [],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "quoteId",
+              "in": "path",
+              "description": "The quote identifier.",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            },
+            {
+              "name": "tableName",
+              "in": "path",
+              "description": "The quote table name.",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Get number of rows in quote table",
+              "schema": {
+                "format": "int32",
+                "type": "integer"
+              }
+            },
+            "403": {
+              "description": "The logged user doesn't have the permissions to view this quote.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "404": {
+              "description": "Quote not found.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            }
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            },
+            {
+              "jwtAuth": []
+            },
+            {
+              "basicAuth": []
+            }
+          ]
+        }
+      },
+      "/api/v1/quotes/{quoteId}/items/$count": {
+        "get": {
+          "tags": [
+            "Quotes"
+          ],
+          "summary": "Get the items count from the quote.",
+          "operationId": "Quotes_GetItemsCount",
+          "consumes": [],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "quoteId",
+              "in": "path",
+              "description": "The unique quote identifier.",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Total numbers of quote's items.",
+              "schema": {
+                "format": "int32",
+                "type": "integer"
+              }
+            },
+            "403": {
+              "description": "The logged user doesn't have the permissions to view this quote.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "404": {
+              "description": "Quote not found.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "500": {
+              "description": "Internal server error.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            }
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            },
+            {
+              "jwtAuth": []
+            },
+            {
+              "basicAuth": []
+            }
+          ]
+        }
+      },
+      "/api/v1/quotes/{quoteId}/items/{itemId}/selectedAttributes": {
+        "get": {
+          "tags": [
+            "Quotes"
+          ],
+          "summary": "Get the selected attributes for the quote item.",
+          "description": "Gets all attributes on an item, including those without a selected attribute value. The Values node is populated with the selected attribute values.",
+          "operationId": "Quotes_GetItemSelectedAttributes",
+          "consumes": [],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "quoteId",
+              "in": "path",
+              "description": "The unique quote identifier.",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            },
+            {
+              "name": "itemId",
+              "in": "path",
+              "description": "The unique item identifier.",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Selected attributes for the quote are retrieved successfully.",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Webcom.API.Public.Quote.VM.SelectedAttributesVM"
+                }
+              }
+            },
+            "403": {
+              "description": "The logged user doesn't have the rights to view the quote."
+            },
+            "404": {
+              "description": "Quote or quote item not found."
+            },
+            "500": {
+              "description": "Internal server error."
+            }
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            },
+            {
+              "jwtAuth": []
+            },
+            {
+              "basicAuth": []
+            }
+          ]
+        }
+      },
+      "/api/v1/quotes/{quoteId}/items/{itemId}/pricingConditions": {
+        "get": {
+          "tags": [
+            "Quotes"
+          ],
+          "summary": "Gets quote item pricing conditions.",
+          "description": "An array of pricing conditions or empty array if quote item field to pricing condition mappings are not defined for quote pricing procedure.",
+          "operationId": "Quotes_GetItemPricingConditions",
+          "consumes": [],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "quoteId",
+              "in": "path",
+              "description": "The unique quote identifier.",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            },
+            {
+              "name": "itemId",
+              "in": "path",
+              "description": "The unique item identifier.",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Gets quote item pricing conditions.",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PricingConditionVM"
+                }
+              }
+            },
+            "400": {
+              "description": "Occurs if non-numeric quote item field is mapped to a pricing condition rate or value.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "404": {
+              "description": "Quote or quote item not found.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "500": {
+              "description": "Server specific error occured.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            }
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            },
+            {
+              "jwtAuth": []
+            },
+            {
+              "basicAuth": []
+            }
+          ]
+        }
+      },
+      "/api/v1/quotes/{quoteId}/pricingConditions": {
+        "get": {
+          "tags": [
+            "Quotes"
+          ],
+          "summary": "Gets quote header pricing conditions.",
+          "description": "An array of pricing conditions or empty array if quote header field to pricing condition mappings are not defined for quote pricing procedure.",
+          "operationId": "Quotes_GetHeaderPricingConditions",
+          "consumes": [],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "quoteId",
+              "in": "path",
+              "description": "The unique quote identifier.",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Gets quote item pricing conditions.",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PricingConditionVM"
+                }
+              }
+            },
+            "400": {
+              "description": "Occurs if non-numeric quote header field is mapped to a pricing condition rate or value.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "500": {
+              "description": "Server specific error occured.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            }
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            },
+            {
+              "jwtAuth": []
+            },
+            {
+              "basicAuth": []
+            }
+          ]
+        }
+      },
+      "/api/v1/quotes/{quoteId}/involvedParties": {
+        "get": {
+          "tags": [
+            "Quotes"
+          ],
+          "summary": "Gets the involved parties on the quote.",
+          "description": "Gets the details of all involved parties on the quote (for example, partner function ID and key, partner function name, business partner ID, and so on).",
+          "operationId": "Quotes_GetInvolvedParties",
+          "consumes": [],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "quoteId",
+              "in": "path",
+              "description": "The quote identifier.",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Retrieves the list of involved parties by the quote ID.",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Webcom.API.Public.Quote.VM.InvolvedPartyVM"
+                }
+              }
+            },
+            "403": {
+              "description": "The user doesn't have the rights to perform the action or the Business Partners feature is not enabled."
+            },
+            "404": {
+              "description": "Quote not found."
+            },
+            "500": {
+              "description": "Internal server error."
+            }
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            },
+            {
+              "jwtAuth": []
+            },
+            {
+              "basicAuth": []
+            }
+          ]
+        },
+        "post": {
+          "tags": [
+            "Quotes"
+          ],
+          "summary": "Adds the involved party to the specified quote.",
+          "description": "If the partner function with the specified key exists in the <b>Setup</b>, the system searches for the business partner with the business partner ID specified in the body. If there is a business partner with that ID in the <b>Setup</b>, the system uses it to create the involved party. The details of the business partner defined in the <b>Setup</b> are overwritten on the quote with the details sent in the body. If there aren't any business partners with that ID in the <b>Setup</b>, an adequate response is sent.\r\n<br /><br />If the body of the request doesn’t contain the business partner ID, the system uses the partner ID to find the business partner. If there is a business partner with the matching partner ID in the <b>Setup</b>, the system uses it to create the involved party. The details of the business partner defined in the <b>Setup</b> are overwritten on the quote with the details sent in the body.\r\n<br /><br />If there is a matching business partner ID in the <b>Setup</b>, but the partner ID from the body doesn’t match any of the partner IDs in the <b>Setup</b>, the system overwrites the partner ID of the business partner with the ID from the body.\r\n<br /><br />If the body of the request doesn’t contain the business partner ID nor the partner ID, the system uses the external ID to find the business partner. If there is a business partner with the matching external ID in the <b>Setup</b>, the system uses it to create the involved party. The details of the business partner defined in the <b>Setup</b> are overwritten on the quote with the details sent in the body.\r\n<br /><br />If there is a matching business partner ID and partner ID in the <b>Setup</b>, but the external ID from the body doesn’t match any of the external IDs in the <b>Setup</b>, the system overwrites the external ID of the business partner with the ID from the body.\r\n<br /><br />If the request body doesn’t contain the business partner ID nor the partner ID nor the external ID, the system creates a new business partner on the quote with the details sent in the body. This scenario is applicable only if the <b>Allow adding business partners on quotes without creating them first in Setup</b> parameter is enabled in the tenant.",
+          "operationId": "Quotes_AddInvolvedParty",
+          "consumes": [
+            "application/json",
+            "text/json",
+            "application/xml",
+            "text/xml",
+            "application/x-www-form-urlencoded"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "quoteId",
+              "in": "path",
+              "description": "The quote identifier.",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            },
+            {
+              "name": "involvedPartyVm",
+              "in": "body",
+              "description": "The involved party view model.",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.InvolvedPartyVM"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Involved party successfully added."
+            },
+            "400": {
+              "description": "Invalid request body."
+            },
+            "403": {
+              "description": "The user doesn't have the rights to perform the action or the Business Partners feature is not enabled."
+            },
+            "404": {
+              "description": "Requested partner function does not exist."
+            },
+            "500": {
+              "description": "Internal server error."
+            }
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            },
+            {
+              "jwtAuth": []
+            },
+            {
+              "basicAuth": []
+            }
+          ]
+        }
+      },
+      "/api/v1/quotes/{quoteId}/involvedParties/{involvedPartyId}": {
+        "delete": {
+          "tags": [
+            "Quotes"
+          ],
+          "summary": "Deletes involved party.",
+          "description": "Removes the involved party from the quote, while the business partner and the partner function remain unchanged in the Setup.",
+          "operationId": "Quotes_DeleteInvolvedParty",
+          "consumes": [],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "quoteId",
+              "in": "path",
+              "description": "The quote identifier.",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            },
+            {
+              "name": "involvedPartyId",
+              "in": "path",
+              "description": "The involved party identifier.",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Involved party successfully deleted."
+            },
+            "403": {
+              "description": "The user doesn't have the rights to perform the action or the Business Partners feature is not enabled."
+            },
+            "404": {
+              "description": "Requested involved party does not exist."
+            },
+            "500": {
+              "description": "Internal server error."
+            }
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            },
+            {
+              "jwtAuth": []
+            },
+            {
+              "basicAuth": []
+            }
+          ]
+        },
+        "patch": {
+          "tags": [
+            "Quotes"
+          ],
+          "summary": "Updates involved party.",
+          "description": "Updates the partner function and business partner details on the quote while they stay unchanged in the Setup. You can't create new business partners through this API, you can only update the existing ones.\r\nNames of custom fields must be prefixed with 'cf_' like  'cf_CustomFieldName'",
+          "operationId": "Quotes_UpdateInvolvedParty",
+          "consumes": [
+            "application/json",
+            "text/json",
+            "application/xml",
+            "text/xml",
+            "application/x-www-form-urlencoded"
+          ],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "quoteId",
+              "in": "path",
+              "description": "The quote identifier.",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            },
+            {
+              "name": "involvedPartyId",
+              "in": "path",
+              "description": "The involved party identifier.",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            },
+            {
+              "name": "involvedPartyRequest",
+              "in": "body",
+              "description": "The involved party request.",
+              "required": true,
+              "schema": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "example": {
+                  "PartnerFunctionKey": "string",
+                  "BusinessPartnerId": "0",
+                  "Name": "string",
+                  "FirstName": "string",
+                  "LastName": "string",
+                  "Country": "string",
+                  "Region": "string",
+                  "City": "string",
+                  "ZipCode": "string",
+                  "TimeZone": "string",
+                  "Address1": "string",
+                  "Address2": "string",
+                  "Email": "string",
+                  "Telephone": "string",
+                  "VATNumber": "string",
+                  "TaxNumber1": "string",
+                  "TaxNumber2": "string",
+                  "Fax": "string",
+                  "BankAccount1": "string",
+                  "BankAccount2": "string",
+                  "PrimaryIndustry": "string",
+                  "PartnerId": "string",
+                  "PartnerNumber": "string",
+                  "cf_CustomFieldName": "CustomFieldValue"
+                }
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Involved party successfully updated."
+            },
+            "403": {
+              "description": "The user doesn't have the rights to perform the action or the Business Partners feature is not enabled."
+            },
+            "404": {
+              "description": "Requested involved party does not exist."
+            },
+            "500": {
+              "description": "Internal server error."
+            }
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            },
+            {
+              "jwtAuth": []
+            },
+            {
+              "basicAuth": []
+            }
+          ]
+        }
+      },
+      "/api/v1/quotes/{quoteId}/items/{itemId}/actions": {
+        "get": {
+          "tags": [
+            "Quotes"
+          ],
+          "summary": "Gets available actions for quote item.",
+          "description": "Gets the list of available quote item actions. If the quote Id and item Id exist, user gets the list of available actions with status 200.",
+          "operationId": "Quotes_GetQuoteItemActions",
+          "consumes": [],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "quoteId",
+              "in": "path",
+              "description": "The unique quote identifier.",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            },
+            {
+              "name": "itemId",
+              "in": "path",
+              "description": "The unique item identifier.",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Quote item actions",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Webcom.API.Public.Quote.VM.WorkflowItemActionVM"
+                }
+              }
+            },
+            "400": {
+              "description": "Invalid request body."
+            },
+            "404": {
+              "description": "Quote or quote item not found."
+            },
+            "500": {
+              "description": "Internal server error."
+            }
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            },
+            {
+              "jwtAuth": []
+            },
+            {
+              "basicAuth": []
+            }
+          ]
+        }
+      },
+      "/api/v1/quotes/{quoteId}/items/{itemId}/actions/{actionId}/invoke": {
+        "post": {
+          "tags": [
+            "Quotes"
+          ],
+          "summary": "Invokes selected actions on quote item",
+          "description": "Executes quote item action. In case the quote, item and action Id exist, action is successfully executed with status 200.",
+          "operationId": "Quotes_ExecuteQuoteItemAction",
+          "consumes": [],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "quoteId",
+              "in": "path",
+              "description": "The unique quote identifier.",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            },
+            {
+              "name": "itemId",
+              "in": "path",
+              "description": "The unique item identifier.",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            },
+            {
+              "name": "actionId",
+              "in": "path",
+              "description": "The unique action identifier.",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Quote item action executed"
+            },
+            "400": {
+              "description": "Invalid request body."
+            },
+            "404": {
+              "description": "Quote or quote item not found."
+            },
+            "500": {
+              "description": "Internal server error."
+            }
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            },
+            {
+              "jwtAuth": []
+            },
+            {
+              "basicAuth": []
+            }
+          ]
+        }
+      },
+      "/api/v1/quotes/{quoteId}/approvals/history": {
+        "get": {
+          "tags": [
+            "Quotes"
+          ],
+          "summary": "Get quote approval history.",
+          "description": "If there is no approval history on the quote, the payload is empty and the response is Status 200.",
+          "operationId": "Quotes_GetApprovalsHistory",
+          "consumes": [],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "quoteId",
+              "in": "path",
+              "description": "The unique quote identifier.",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Quote approval history",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Webcom.API.Public.Quote.VM.ApprovalHistoryVM"
+                }
+              }
+            },
+            "403": {
+              "description": "The logged user doesn't have the permissions to view this quote.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "404": {
+              "description": "Quote not found.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "500": {
+              "description": "Internal server error.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            }
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            },
+            {
+              "jwtAuth": []
+            },
+            {
+              "basicAuth": []
+            }
+          ]
+        }
+      },
+      "/api/v1/quotes/{quoteId}/approvals": {
+        "get": {
+          "tags": [
+            "Quotes"
+          ],
+          "summary": "Gets broken rules.",
+          "description": "Gets the approval rules broken by user that's logged in. If there are no broken rules, the payload is empty and the response is Status 200.",
+          "operationId": "Quotes_GetApprovals",
+          "consumes": [],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "quoteId",
+              "in": "path",
+              "description": "",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Quote approvals",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Webcom.API.Public.Quote.VM.ApprovalVM"
+                }
+              }
+            },
+            "403": {
+              "description": "The logged user doesn't have the permissions to view this quote.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "404": {
+              "description": "Quote not found.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "500": {
+              "description": "Internal server error.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            }
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            },
+            {
+              "jwtAuth": []
+            },
+            {
+              "basicAuth": []
+            }
+          ]
+        }
+      },
+      "/api/v1/quotes/{quoteId}/approvals/responsibilities": {
+        "get": {
+          "tags": [
+            "Quotes"
+          ],
+          "summary": "Gets broken rules ready for approval.",
+          "description": "List of IDs of broken approval rules that the logged in user needs to approve or reject. If there are no approval rules, the payload is empty and the response is Status 200.",
+          "operationId": "Quotes_GetApproversResponsibility",
+          "consumes": [],
+          "produces": [
+            "application/json"
+          ],
+          "parameters": [
+            {
+              "name": "quoteId",
+              "in": "path",
+              "description": "The quote identifier.",
+              "required": true,
+              "type": "integer",
+              "format": "int32"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Quote approvals responsibilities",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Webcom.API.Public.Quote.VM.ApproversResponsibilityVM"
+                }
+              }
+            },
+            "403": {
+              "description": "The logged user doesn't have the permissions to view this quote.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "404": {
+              "description": "Quote not found.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            },
+            "500": {
+              "description": "Internal server error.",
+              "schema": {
+                "$ref": "#/definitions/Webcom.Common.Util.Exceptions.DetailsErrorContent"
+              }
+            }
+          },
+          "security": [
+            {
+              "bearerAuth": []
+            },
+            {
+              "jwtAuth": []
+            },
+            {
+              "basicAuth": []
+            }
+          ]
+        }
+      }
+    },
+     "definitions":{
+        "Webcom.API.Public.Quote.VM.QuoteRevisionVM": {
+            "description": "Quote revision",
+            "type": "object",
+            "properties": {
+              "QuoteId": {
+                "description": "Quote ID",
+                "type": "string"
+              },
+              "OwnerId": {
+                "description": "Owner ID",
+                "type": "string"
+              },
+              "Name": {
+                "description": "Name of revision",
+                "type": "string"
+              },
+              "Description": {
+                "description": "Description",
+                "type": "string"
+              },
+              "DateCreated": {
+                "description": "Date when quote revision was created",
+                "type": "string"
+              },
+              "DateModified": {
+                "description": "Date when quote revision was last modified",
+                "type": "string"
+              },
+              "RevisionNumber": {
+                "format": "int32",
+                "description": "Revision number",
+                "type": "integer"
+              },
+              "ParentRevision": {
+                "description": "Parent revision",
+                "type": "string"
+              },
+              "IsActive": {
+                "description": "Is revision active",
+                "type": "boolean"
+              },
+              "Status": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.QuoteStatusVM",
+                "description": "Status info"
+              },
+              "Market": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.MarketVM",
+                "description": "Market info"
+              },
+              "TotalAmount": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.TotalAmountVM",
+                "description": "Total amount info"
+              }
+            }
+          },
+          "Webcom.API.Public.Quote.VM.QuoteStatusVM": {
+            "description": "Quote status",
+            "type": "object",
+            "properties": {
+              "Id": {
+                "format": "int32",
+                "type": "integer"
+              },
+              "Name": {
+                "type": "string"
+              }
+            }
+          },
+          "Webcom.API.Public.Quote.VM.MarketVM": {
+            "description": "Market info",
+            "type": "object",
+            "properties": {
+              "Id": {
+                "format": "int32",
+                "description": "Market ID",
+                "type": "integer"
+              },
+              "Name": {
+                "description": "Market name",
+                "type": "string"
+              }
+            }
+          },
+          "Webcom.API.Public.Quote.VM.TotalAmountVM": {
+            "description": "Total amount info",
+            "type": "object",
+            "properties": {
+              "CurrencyCode": {
+                "description": "Currency code",
+                "type": "string"
+              },
+              "Value": {
+                "description": "Total amount value",
+                "type": "string"
+              },
+              "FormattedValue": {
+                "description": "{CurrencySign}{Value} example: $500.00",
+                "type": "string"
+              }
+            }
+          },
+          "Webcom.API.Public.Quote.VM.GeneratedDocumentInfoVM": {
+            "type": "object",
+            "properties": {
+              "DocumentId": {
+                "format": "int32",
+                "description": "Generated document ID",
+                "type": "integer"
+              },
+              "Filename": {
+                "description": "Name of the file",
+                "type": "string"
+              },
+              "Filesize": {
+                "description": "Size of file in KB",
+                "type": "string"
+              },
+              "DateCreated": {
+                "description": "Date of generated document",
+                "type": "string"
+              }
+            }
+          },
+          "Webcom.API.Public.Quote.VM.AttachmentInfoVM": {
+            "description": "Quote attachment view model",
+            "type": "object",
+            "properties": {
+              "Id": {
+                "format": "int32",
+                "description": "Gets or sets the identifier.",
+                "type": "integer"
+              },
+              "FileName": {
+                "description": "Gets or sets the name of the file.",
+                "type": "string"
+              },
+              "DateCreated": {
+                "description": "Gets or sets the date created.",
+                "type": "string"
+              }
+            }
+          },
+          "Webcom.API.Public.Quote.VM.NewQuoteVMResponse": {
+            "type": "object",
+            "properties": {
+              "NewQuoteId": {
+                "format": "int32",
+                "type": "integer"
+              }
+            }
+          },
+          "Webcom.API.Public.Quote.VM.QuoteTableActionVM": {
+            "description": "Quote Table Action VM",
+            "type": "object",
+            "properties": {
+              "Id": {
+                "format": "int32",
+                "description": "The identifier.",
+                "type": "integer"
+              },
+              "Name": {
+                "description": "Name of action.",
+                "type": "string"
+              }
+            }
+          },
+          "Webcom.API.Public.Quote.VM.WorkflowActionVM": {
+            "description": "Workflow action view model",
+            "type": "object",
+            "properties": {
+              "Id": {
+                "format": "int32",
+                "description": "The identifier.",
+                "type": "integer"
+              },
+              "Name": {
+                "description": "Name of action.",
+                "type": "string"
+              },
+              "SystemId": {
+                "description": "System ID.",
+                "type": "string"
+              }
+            }
+          },
+          "Webcom.API.Public.Quote.VM.QuoteVMRequest": {
+            "description": "The Quote Request",
+            "type": "object",
+            "properties": {
+              "ExternalId": {
+                "description": "Get or set external id.",
+                "type": "string"
+              },
+              "ExternalSystemId": {
+                "description": "Get or set external system id.",
+                "type": "string"
+              },
+              "MarketId": {
+                "format": "int32",
+                "description": "Get or set market id.",
+                "type": "integer"
+              },
+              "MarketCode": {
+                "description": "Gets or sets market code.",
+                "type": "string"
+              },
+              "CurrencyCode": {
+                "description": "Gets or sets Currency Code",
+                "type": "string"
+              },
+              "PricebookId": {
+                "format": "int32",
+                "description": "Get or sets pricebook id.",
+                "type": "integer"
+              },
+              "DistributionChannel": {
+                "description": "Get or set distribution channel.",
+                "type": "string"
+              },
+              "GlobalComment": {
+                "description": "Get or set global comment.",
+                "type": "string"
+              },
+              "Origin": {
+                "description": "Get or set origin.",
+                "type": "string"
+              },
+              "OpportunityId": {
+                "description": "Get or set opportunity identifier",
+                "type": "string"
+              },
+              "OpportunityName": {
+                "description": "Get or set opportunity name",
+                "type": "string"
+              },
+              "IsPrimary": {
+                "description": "Get or set opportunity to be primary",
+                "type": "boolean"
+              },
+              "ErrorMessage": {
+                "description": "Get or set error message",
+                "type": "string"
+              },
+              "Comments": {
+                "description": "List of collaboration comments.",
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Webcom.API.Public.Quote.VM.QuoteCommentRequestVM"
+                }
+              },
+              "Customers": {
+                "description": "List of customers.",
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Webcom.API.Public.Quote.VM.CustomerRequestVM"
+                }
+              },
+              "CustomFields": {
+                "description": "List of custom fields.",
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Webcom.API.Public.Quote.VM.CustomFieldVM"
+                }
+              },
+              "Items": {
+                "description": "List of quote's items.",
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Webcom.API.Public.Quote.VM.QuoteItemRequestVM"
+                }
+              },
+              "InvolvedParties": {
+                "description": "Gets or sets the involved parties.",
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Webcom.API.Public.Quote.VM.InvolvedPartyVM"
+                }
+              },
+              "QuoteTables": {
+                "description": "Gets or sets the quote tables.",
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/SAP.CPQ.Quote.Common.DTO.QuoteTableRequest"
+                }
+              }
+            }
+          },
+          "Webcom.API.Public.Quote.VM.QuoteCommentRequestVM": {
+            "description": "Quote Comment Request view model",
+            "type": "object",
+            "properties": {
+              "UserFullName": {
+                "description": "User Full Name.",
+                "type": "string"
+              },
+              "UserEmail": {
+                "description": "User Email.",
+                "type": "string"
+              },
+              "UserCompany": {
+                "description": "User Company",
+                "type": "string"
+              },
+              "Comment": {
+                "description": "Comment text",
+                "type": "string"
+              },
+              "Source": {
+                "format": "int32",
+                "description": "Comment creator",
+                "type": "integer"
+              }
+            }
+          },
+          "Webcom.API.Public.Quote.VM.CustomerRequestVM": {
+            "description": "Customer Request view model",
+            "type": "object",
+            "properties": {
+              "Id": {
+                "format": "int32",
+                "description": "Gets or sets Id",
+                "type": "integer"
+              },
+              "CustomerCode": {
+                "description": "Get or set Customer Code",
+                "type": "string"
+              },
+              "RoleType": {
+                "description": "Get or set Role Type",
+                "type": "string"
+              }
+            }
+          },
+          "Webcom.API.Public.Quote.VM.QuoteItemRequestVM": {
+            "description": "Quote Item Request",
+            "type": "object",
+            "properties": {
+              "Quantity": {
+                "format": "int32",
+                "description": "Gets or sets the quantity.",
+                "type": "integer"
+              },
+              "PartNumber": {
+                "description": "Gets or sets the part number.",
+                "type": "string"
+              },
+              "ProductSystemId": {
+                "description": "Gets or sets the product system identifier.",
+                "type": "string"
+              },
+              "ConfigurationId": {
+                "format": "uuid",
+                "description": "Gets or sets the configuration identifier.",
+                "type": "string",
+                "example": "00000000-0000-0000-0000-000000000000"
+              },
+              "ExternalConfigurationId": {
+                "description": "Gets or sets the external item identifier.",
+                "type": "string"
+              },
+              "Comments": {
+                "description": "Quote Item Comments",
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Webcom.API.Public.Quote.VM.QuoteCommentVM"
+                }
+              }
+            }
+          },
+          "Webcom.API.Public.Quote.VM.InvolvedPartyVM": {
+            "description": "Involved party view model",
+            "type": "object",
+            "properties": {
+              "PartnerFunctionId": {
+                "format": "int32",
+                "description": "Partner Function Id",
+                "type": "integer"
+              },
+              "PartnerFunctionKey": {
+                "description": "Partner Function Key",
+                "type": "string"
+              },
+              "PartnerFunctionName": {
+                "description": "Partner Function Name",
+                "type": "string"
+              },
+              "BusinessPartnerId": {
+                "format": "int32",
+                "description": "Business Partner Id",
+                "type": "integer"
+              },
+              "ExternalId": {
+                "description": "External Id",
+                "type": "string"
+              },
+              "Name": {
+                "description": "Name",
+                "type": "string"
+              },
+              "FirstName": {
+                "description": "First Name",
+                "type": "string"
+              },
+              "LastName": {
+                "description": "Last Name",
+                "type": "string"
+              },
+              "Country": {
+                "description": "Country",
+                "type": "string"
+              },
+              "State": {
+                "description": "State",
+                "type": "string"
+              },
+              "Region": {
+                "description": "Region",
+                "type": "string"
+              },
+              "CityName": {
+                "description": "City Name",
+                "type": "string"
+              },
+              "PostalCode": {
+                "description": "Postal Code",
+                "type": "string"
+              },
+              "TimeZone": {
+                "description": "Time Zone",
+                "type": "string"
+              },
+              "AddressName": {
+                "description": "Address Name",
+                "type": "string"
+              },
+              "AddressAdditionalName": {
+                "description": "Address Additional Name",
+                "type": "string"
+              },
+              "EmailAddress": {
+                "description": "Email Address",
+                "type": "string"
+              },
+              "Phone": {
+                "description": "Phone",
+                "type": "string"
+              },
+              "VATNumber": {
+                "description": "VAT Number",
+                "type": "string"
+              },
+              "TaxNumber1": {
+                "description": "Tax Number 1",
+                "type": "string"
+              },
+              "TaxNumber2": {
+                "description": "Tax Number 1",
+                "type": "string"
+              },
+              "Fax": {
+                "description": "Fax",
+                "type": "string"
+              },
+              "BankAccount1": {
+                "description": "Bank Account 1",
+                "type": "string"
+              },
+              "BankAccount2": {
+                "description": "Bank Account 2",
+                "type": "string"
+              },
+              "PrimaryIndustry": {
+                "description": "Primary Industry",
+                "type": "string"
+              },
+              "SystemId": {
+                "description": "System Id",
+                "type": "string"
+              },
+              "Id": {
+                "format": "int32",
+                "description": "Identifier (auto-increment)",
+                "type": "integer"
+              },
+              "PartnerId": {
+                "description": "Partner ID",
+                "type": "string"
+              },
+              "FormOfAddress": {
+                "description": "The form of address.",
+                "type": "string"
+              },
+              "AddressName3": {
+                "description": "The address name 3.",
+                "type": "string"
+              },
+              "AddressName4": {
+                "description": "The address name 4.",
+                "type": "string"
+              },
+              "TaxJurisdiction": {
+                "description": "The tax jurisdiction.",
+                "type": "string"
+              },
+              "POBoxPostalCode": {
+                "description": "The PO box postal code.",
+                "type": "string"
+              },
+              "POBox": {
+                "description": "The PO box.",
+                "type": "string"
+              },
+              "District": {
+                "description": "The district.",
+                "type": "string"
+              },
+              "StreetPrefixName": {
+                "description": "The street prefix name.",
+                "type": "string"
+              },
+              "AdditionalStreetPrefixName": {
+                "description": "The additional street prefix name.",
+                "type": "string"
+              },
+              "StreetName": {
+                "description": "The street name.",
+                "type": "string"
+              },
+              "StreetSuffixName": {
+                "description": "The street suffix name.",
+                "type": "string"
+              },
+              "AdditionalStreetSuffixName": {
+                "description": "The additional street suffix name.",
+                "type": "string"
+              },
+              "HouseNumber": {
+                "description": "The house number.",
+                "type": "string"
+              },
+              "TransportZone": {
+                "description": "The transport zone.",
+                "type": "string"
+              },
+              "CorrespondenceLanguage": {
+                "description": "The correspondence language.",
+                "type": "string"
+              },
+              "MobilePhone": {
+                "description": "The mobile phone.",
+                "type": "string"
+              },
+              "PartnerNumber": {
+                "description": "The partner number.",
+                "type": "string"
+              },
+              "InvolvedPartyCustomFields": {
+                "description": "List of custom fields",
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Webcom.API.Public.Quote.VM.InvolvedPartyCustomFieldVM"
+                }
+              }
+            }
+          },
+          "SAP.CPQ.Quote.Common.DTO.QuoteTableRequest": {
+            "type": "object",
+            "properties": {
+              "Name": {
+                "type": "string"
+              },
+              "Rows": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/SAP.CPQ.Quote.Common.DTO.QuoteTableRowRequest"
+                }
+              }
+            }
+          },
+          "Webcom.API.Public.Quote.VM.InvolvedPartyCustomFieldVM": {
+            "description": "View model for Custom Fields on Involved Parties",
+            "type": "object",
+            "properties": {
+              "Name": {
+                "description": "Custom field name",
+                "type": "string"
+              },
+              "Value": {
+                "description": "Custom field value",
+                "type": "string"
+              }
+            }
+          },
+          "SAP.CPQ.Quote.Common.DTO.QuoteTableRowRequest": {
+            "type": "object",
+            "properties": {
+              "Cells": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/SAP.CPQ.Quote.Common.DTO.QuoteTableCellRequestObject"
+                }
+              }
+            }
+          },
+          "SAP.CPQ.Quote.Common.DTO.QuoteTableCellRequestObject": {
+            "type": "object",
+            "properties": {
+              "ColumnName": {
+                "type": "string"
+              },
+              "Value": {
+                "type": "object"
+              }
+            }
+          },
+          "SAP.CPQ.API.Quote.VM.CreateNewQuoteVMResponse": {
+            "description": "Create New Quote Response",
+            "type": "object",
+            "properties": {
+              "QuoteId": {
+                "format": "int32",
+                "description": "The quote identifier.",
+                "type": "integer"
+              },
+              "QuoteNumber": {
+                "description": "The quote number.",
+                "type": "string"
+              }
+            }
+          },
+          "Webcom.API.Public.Quote.VM.QuoteVMResponse": {
+            "description": "Quote Response",
+            "type": "object",
+            "properties": {
+              "QuoteId": {
+                "format": "int32",
+                "description": "The quote identifier.",
+                "type": "integer"
+              },
+              "Comment": {
+                "description": "Gets or sets the comment.",
+                "type": "string"
+              },
+              "DateCreated": {
+                "description": "Gets or sets the date created.",
+                "type": "string"
+              },
+              "DateModified": {
+                "description": "Gets or sets the date modified.",
+                "type": "string"
+              },
+              "DateOrdered": {
+                "description": "Gets or sets the date ordered.",
+                "type": "string"
+              },
+              "DateClosed": {
+                "description": "Gets or sets the date closed.",
+                "type": "string"
+              },
+              "EffectiveDate": {
+                "description": "Gets or sets the effective date.",
+                "type": "string"
+              },
+              "ExternalId": {
+                "description": "Gets or sets the external identifier.",
+                "type": "string"
+              },
+              "ExternalSystemId": {
+                "description": "Gets or sets the external system identifier.",
+                "type": "string"
+              },
+              "MarketCode": {
+                "description": "Gets or sets the market code.",
+                "type": "string"
+              },
+              "CurrencyCode": {
+                "description": "Gets or sets the currency code.",
+                "type": "string"
+              },
+              "MarketId": {
+                "format": "int32",
+                "description": "Gets or sets the market identifier.",
+                "type": "integer"
+              },
+              "Origin": {
+                "description": "Gets or sets the origin.",
+                "type": "string"
+              },
+              "OwnerId": {
+                "format": "int32",
+                "description": "Gets or sets the owner identifier.",
+                "type": "integer"
+              },
+              "PriceBookId": {
+                "format": "int32",
+                "description": "Gets or sets the price book identifier.",
+                "type": "integer"
+              },
+              "DistributionChannel": {
+                "description": "Gets or sets the distribution channel.",
+                "type": "string"
+              },
+              "StatusId": {
+                "format": "int32",
+                "description": "Gets or sets the status identifier.",
+                "type": "integer"
+              },
+              "StatusName": {
+                "description": "Gets or sets the name of the status.",
+                "type": "string"
+              },
+              "QuoteNumber": {
+                "description": "Gets or sets the quote number.",
+                "type": "string"
+              },
+              "RevisionNumber": {
+                "description": "Gets or sets the name of the revision.",
+                "type": "string"
+              },
+              "OpportunityId": {
+                "description": "Get or set opportunity identifier",
+                "type": "string"
+              },
+              "OpportunityName": {
+                "description": "Get or set opporutnity name",
+                "type": "string"
+              },
+              "IsPrimary": {
+                "description": "Get or set opportunity to be primary",
+                "type": "boolean"
+              },
+              "ErrorMessage": {
+                "description": "Get or set errror message",
+                "type": "string"
+              },
+              "Customers": {
+                "description": "Gets or sets the customers.",
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Webcom.API.Public.Quote.VM.CustomerVM"
+                }
+              },
+              "Comments": {
+                "description": "Gets or sets the comments.",
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Webcom.API.Public.Quote.VM.QuoteCommentVM"
+                }
+              },
+              "InvolvedParties": {
+                "description": "Gets or sets the involved parties.",
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Webcom.API.Public.Quote.VM.InvolvedPartyVM"
+                }
+              },
+              "QuoteTables": {
+                "description": "Gets or sets the quote tables.",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "CustomFields": {
+                "description": "Gets or sets the custom fields.",
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Webcom.API.Public.Quote.VM.CustomFieldVM"
+                }
+              },
+              "TotalAmount": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PriceVm",
+                "description": "Gets or sets the total amount."
+              },
+              "TotalMrcAmount": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PriceVm",
+                "description": "Gets or sets the total MRC amount."
+              },
+              "TotalListPrice": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PriceVm",
+                "description": "Gets or sets the total list price."
+              },
+              "TotalMRCListPrice": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PriceVm",
+                "description": "Gets or sets the total MRC list price."
+              },
+              "TotalNetPrice": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PriceVm",
+                "description": "Gets or sets the total net price."
+              },
+              "TotalMRCNetPrice": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PriceVm",
+                "description": "Gets or sets the total MRC net price."
+              },
+              "Cost": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PriceVm",
+                "description": "Gets or sets the cost."
+              },
+              "TotalMRCCost": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PriceVm",
+                "description": "Gets or sets the total MRC cost."
+              },
+              "TotalProductDiscountAmount": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PriceVm",
+                "description": "Gets or sets the total product discount amount."
+              },
+              "TotalMRCProductDiscountAmount": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PriceVm",
+                "description": "Gets or sets the total MRC product discount amount."
+              },
+              "AverageProductDiscountPercent": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PriceVm",
+                "description": "Gets or sets the average product discount percent."
+              },
+              "AverageMRCProductDiscountPercent": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PriceVm",
+                "description": "Gets or sets the average MRC product discount percent."
+              },
+              "AverageGrossMarginPercent": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PriceVm",
+                "description": "Gets or sets the average gross margin percent."
+              },
+              "AverageMRCGrossMarginPercent": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PriceVm",
+                "description": "Gets or sets the average MRC gross margin percent."
+              },
+              "OrderId": {
+                "description": "Gets or sets the order id",
+                "type": "string"
+              },
+              "RecurringNetPriceMonthly": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PriceVm",
+                "description": "Gets or sets the Recurring Net Price Monthly."
+              },
+              "RecurringNetPriceYearly": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PriceVm",
+                "description": "Gets or sets the Recurring Net Price Yearly."
+              },
+              "RecurringCostMonthly": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PriceVm",
+                "description": "Gets or sets the Recurring Cost Monthly."
+              },
+              "RecurringCostYearly": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PriceVm",
+                "description": "Gets or sets the Recurring Cost Yearly."
+              },
+              "RecurringDiscountAmountMonthly": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PriceVm",
+                "description": "Gets or sets the Recurring Discount Amount Monthly."
+              },
+              "RecurringDiscountAmountYearly": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PriceVm",
+                "description": "Gets or sets the Recurring Discount Amount Yearly."
+              },
+              "RecurringListPriceMonthly": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PriceVm",
+                "description": "Gets or sets the Recurring List Price Monthly."
+              },
+              "RecurringListPriceYearly": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PriceVm",
+                "description": "Gets or sets the Recurring List Price Yearly."
+              },
+              "EstimatedContractTotalValue": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PriceVm",
+                "description": "Gets or sets the Estimated Contract Total Value."
+              },
+              "PricingConditions": {
+                "description": "Gets or sets the pricing conditions.",
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PricingConditionVM"
+                }
+              },
+              "Division": {
+                "description": "Get or set the division",
+                "type": "string"
+              }
+            }
+          },
+          "Webcom.API.Public.Quote.VM.PriceVm": {
+            "description": "Price view model, powered by SAP API standard.",
+            "type": "object",
+            "properties": {
+              "Value": {
+                "description": "Price value.",
+                "type": "string"
+              },
+              "Currency": {
+                "description": "Currency code value.",
+                "type": "string"
+              },
+              "Period": {
+                "description": "Period value.",
+                "type": "string"
+              },
+              "PriceUnit": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PriceUnitVm",
+                "description": "The PriceUnit node is visible only when the integration with SAP Variant Configuration and Pricing is enabled."
+              }
+            }
+          },
+          "Webcom.API.Public.Quote.VM.PricingConditionVM": {
+            "description": "Pricing condition data.",
+            "type": "object",
+            "properties": {
+              "PricingProcedureStep": {
+                "format": "int32",
+                "description": "Get or set Pricing Procedure Step.",
+                "type": "integer"
+              },
+              "PricingProcedureStepCounter": {
+                "format": "int32",
+                "description": "Get or set Pricing Procedure Step Counter.",
+                "type": "integer"
+              },
+              "ConditionBase": {
+                "description": "Get or set Condition Base.",
+                "type": "string"
+              },
+              "ConditionType": {
+                "description": "Get or set Condition Type.",
+                "type": "string"
+              },
+              "ConditionTypeDescription": {
+                "description": "Get or set Condition Type Description.",
+                "type": "string"
+              },
+              "ConditionRate": {
+                "description": "Get or set Condition Rate.",
+                "type": "string"
+              },
+              "ConditionValue": {
+                "description": "Get or set Condition Value.",
+                "type": "string"
+              },
+              "ConditionCurrency": {
+                "description": "Get or set Condition Currency.",
+                "type": "string"
+              },
+              "ConditionUnit": {
+                "description": "Get or set Condition Unit.",
+                "type": "string"
+              },
+              "ConditionUnitQuantity": {
+                "description": "Get or set Condition Unit Quantity.",
+                "type": "string"
+              },
+              "IsVariantCondition": {
+                "description": "Get or set whether condition is variant.",
+                "type": "boolean"
+              }
+            }
+          },
+          "SAP.CPQ.Quote.Common.DTO.RFQ.QuoteItemResponse": {
+            "type": "object",
+            "properties": {
+              "Id": {
+                "format": "int32",
+                "type": "integer"
+              },
+              "ExternalItemId": {
+                "type": "string"
+              },
+              "ParentItemId": {
+                "format": "int32",
+                "type": "integer"
+              },
+              "IsMainItem": {
+                "type": "boolean"
+              },
+              "Description": {
+                "type": "string"
+              }
+            }
+          },
+          "Webcom.API.Public.Quote.VM.QuoteItemSapStandardVm": {
+            "description": "View model for quote item.",
+            "type": "object",
+            "properties": {
+              "ItemId": {
+                "format": "int32",
+                "description": "Get or set Item Id",
+                "type": "integer"
+              },
+              "ItemNumber": {
+                "format": "int32",
+                "description": "Get or set item raning number in the quote",
+                "type": "integer"
+              },
+              "ParentItemId": {
+                "format": "int32",
+                "description": "Get or set Parent Item Id",
+                "type": "integer"
+              },
+              "ParentRolledUpItemNumber": {
+                "description": "Get or set parent Rolled Up Item number.",
+                "type": "string"
+              },
+              "ParentItemNumber": {
+                "format": "int32",
+                "description": "Get or set parent item raning number in the quote",
+                "type": "integer"
+              },
+              "RolledUpItemNumber": {
+                "description": "Get or set Rolled Up Item Number. This is item ID that users see on a quote, which takes into account items hierarchy. For example: 1.1.1.",
+                "type": "string"
+              },
+              "ExternalItemId": {
+                "description": "Gets or sets item ID from an external system where the item is sourced from",
+                "type": "string"
+              },
+              "DateAdded": {
+                "description": "Get or set Date Added",
+                "type": "string"
+              },
+              "Description": {
+                "description": "Get or set Description",
+                "type": "string"
+              },
+              "DescriptionLong": {
+                "description": "Get or set Description Long",
+                "type": "string"
+              },
+              "DisplayType": {
+                "description": "Get or set Display Type",
+                "type": "string"
+              },
+              "IsLineItem": {
+                "description": "Get or set Is Line Item",
+                "type": "boolean"
+              },
+              "IsMainItem": {
+                "description": "Get or set Is Main Item",
+                "type": "boolean"
+              },
+              "IsOptional": {
+                "description": "Get or set Is Optional item",
+                "type": "boolean"
+              },
+              "IsVariant": {
+                "description": "Get or set Is Variant",
+                "type": "boolean"
+              },
+              "IsAlternative": {
+                "description": "Get or set Is Alternative",
+                "type": "boolean"
+              },
+              "IsSubscriptionItem": {
+                "description": "Get or set Is Subscription Item",
+                "type": "boolean",
+                "readOnly": true
+              },
+              "ItemClassificationType": {
+                "description": "Get or set Item Type",
+                "type": "string"
+              },
+              "ItemType": {
+                "description": "Get or set Item Type",
+                "type": "string"
+              },
+              "Quantity": {
+                "description": "Get or set Quantity",
+                "type": "string"
+              },
+              "UnitOfMeasure": {
+                "description": "Get or set Unit of Measure code",
+                "type": "string"
+              },
+              "PartNumber": {
+                "description": "Get or set Part Number",
+                "type": "string"
+              },
+              "ProductSystemId": {
+                "description": "Get or set Product System Id",
+                "type": "string"
+              },
+              "ProductExternalId": {
+                "description": "Get or set Product External Id",
+                "type": "string"
+              },
+              "ProductId": {
+                "format": "int32",
+                "description": "Get or set Product Id",
+                "type": "integer"
+              },
+              "ProductName": {
+                "description": "Get or set Product Name",
+                "type": "string"
+              },
+              "ProductNameTranslated": {
+                "description": "Get or set Product Name Translated",
+                "type": "string"
+              },
+              "ProductTypeId": {
+                "format": "int32",
+                "description": "Get or set Product Type Id",
+                "type": "integer"
+              },
+              "ProductTypeName": {
+                "description": "Get or set Product Type Name",
+                "type": "string"
+              },
+              "ProductTypeNameTranslated": {
+                "description": "Get or set Product Type Name Translated",
+                "type": "string"
+              },
+              "Comment": {
+                "description": "Get or set item comment",
+                "type": "string"
+              },
+              "CollaborationComments": {
+                "description": "Returns team collaboration comments",
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Webcom.API.Public.Quote.VM.QuoteCommentVM"
+                }
+              },
+              "PricingDetails": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.FixedAndRecurringPricingSapStandardVm",
+                "description": "Get or set Pricing Details"
+              },
+              "SubscriptionDetails": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.SubscriptionDetailsVM",
+                "description": "Get or set Subscription Details"
+              },
+              "CustomFields": {
+                "description": "Get or set quote item Custom Fields",
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Webcom.API.Public.Quote.VM.CustomFieldVM"
+                }
+              },
+              "ConfigurationId": {
+                "description": "Get or set Configuration Id",
+                "type": "string"
+              },
+              "ExternalConfigurationId": {
+                "description": "Get or set External Configuraiton Id",
+                "type": "string"
+              },
+              "SyncedFromBackOffice": {
+                "description": "Get or set Synced From Back Office",
+                "type": "boolean"
+              },
+              "ContractDurationValue": {
+                "description": "Get or set Contract Duration Value",
+                "type": "string"
+              },
+              "ContractDurationUnit": {
+                "description": "Get or set Contract Duration Unit",
+                "type": "string"
+              },
+              "ContractStartDate": {
+                "description": "Get or set Contract Start Date",
+                "type": "string"
+              },
+              "ContractEndDate": {
+                "description": "Get or set Contract End Date",
+                "type": "string"
+              },
+              "BillingCycle": {
+                "description": "Get or set Billing Cycle",
+                "type": "string"
+              },
+              "BillingCycleCode": {
+                "description": "Get or set Billing Cycle Code",
+                "type": "string"
+              },
+              "ServiceProfileValue": {
+                "description": "Get or set Service Profile Value",
+                "type": "string"
+              },
+              "ServiceProfileCode": {
+                "description": "Get or set Service Profile Code",
+                "type": "string"
+              },
+              "ServiceProfilePrice": {
+                "format": "double",
+                "description": "Get or set Service Profile Price",
+                "type": "number"
+              },
+              "ResponseProfileValue": {
+                "description": "Get or set Response Profile Value",
+                "type": "string"
+              },
+              "ResponseProfileCode": {
+                "description": "Get or set Response Profile Code",
+                "type": "string"
+              },
+              "ResponseProfilePrice": {
+                "format": "double",
+                "description": "Get or set Response Profile Price",
+                "type": "number"
+              },
+              "ServiceContractDurationValue": {
+                "description": "Get or set Service Contract Duration Value",
+                "type": "string"
+              },
+              "ServiceContractDurationUnit": {
+                "description": "Get or set Service Contract Duration Unit",
+                "type": "string"
+              },
+              "SettlementPeriodValue": {
+                "description": "Get or set Settlement Period",
+                "type": "string"
+              },
+              "SettlementPeriodCode": {
+                "description": "Get or set Settlement Period Code",
+                "type": "string"
+              },
+              "BillingDateValue": {
+                "description": "Get or set Billing Date Value",
+                "type": "string"
+              },
+              "BillingDateCode": {
+                "description": "Get or set Billing Date Code",
+                "type": "string"
+              },
+              "EstimatedTotalContractValue": {
+                "description": "Get or set Estimated Total Contract Value",
+                "type": "string"
+              },
+              "SelectedAttributes": {
+                "description": "Get or set item selected attributes",
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Webcom.API.Public.Quote.VM.SelectedAttributesVM"
+                }
+              },
+              "PricingConditions": {
+                "description": "Get or set item pricing conditions",
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PricingConditionVM"
+                }
+              },
+              "ExternalConfigurationItemId": {
+                "format": "int32",
+                "description": "Get or set external configuration item id",
+                "type": "integer"
+              },
+              "ExternalConfiguration": {
+                "description": "Get or set external configuration",
+                "type": "string"
+              },
+              "SubscriptionContractNumber": {
+                "description": "Gets or sets the subscription contract number.",
+                "type": "string"
+              },
+              "SubscriptionContractItemNumber": {
+                "description": "Gets or sets the subscription contract item number.",
+                "type": "string"
+              },
+              "ChangeProcessGroupCode": {
+                "description": "Gets or sets the change process group code.",
+                "type": "string"
+              },
+              "ContractChangeProcessingStatus": {
+                "format": "int32",
+                "description": "Gets or sets the contract change processing status.\r\nApplicable only to items relate to contract changes, possible values are:\r\n-1 - Error\r\n0 - Unknown\r\n1 - Sucessfull",
+                "type": "integer"
+              },
+              "ContractAutoRenewalIndicator": {
+                "description": "Contract auto renewal indicator",
+                "type": "boolean"
+              },
+              "ContractExtensionPeriodValue": {
+                "format": "int32",
+                "description": "Contract extension",
+                "type": "integer"
+              },
+              "ContractExtensionPeriodUnit": {
+                "description": "Contract extension unit",
+                "type": "string"
+              },
+              "CancellationId": {
+                "format": "int32",
+                "description": "Subscription contract cancellation id",
+                "type": "integer"
+              },
+              "CancellationDescription": {
+                "description": "Subscription contract cancellation description",
+                "type": "string"
+              },
+              "CancellingParty": {
+                "description": "Subscription contract cancelling party code",
+                "type": "string"
+              },
+              "CancellationReason": {
+                "description": "Subscription contract cancellation reason code",
+                "type": "string"
+              },
+              "CancellationProcedure": {
+                "description": "Subscription contract cancellation procedure code",
+                "type": "string"
+              },
+              "CancellationRequestDate": {
+                "description": "Subscription contract cancellation request date",
+                "type": "string"
+              },
+              "OrderItemType": {
+                "format": "int32",
+                "description": "Order item type of item product:\r\n0 - Sales\r\n1 - Subscription\r\n2 - Subscription Billing\r\n4 - Service contract",
+                "enum": [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4
+                ],
+                "type": "integer"
+              },
+              "SubscriptionContractDocumentNumber": {
+                "description": "Gets or sets the subscription contract document number.",
+                "type": "string"
+              },
+              "ContractChangeActivationDate": {
+                "description": "Get or set Contract Change Activation Date",
+                "type": "string"
+              },
+              "ConfigurationType": {
+                "format": "int32",
+                "description": "Product configuration type.\r\n0 - Standard\r\n1 - Variant\r\n2 - External",
+                "enum": [
+                  0,
+                  1,
+                  2
+                ],
+                "type": "integer"
+              }
+            }
+          },
+          "Webcom.API.Public.Quote.VM.FixedAndRecurringPricingSapStandardVm": {
+            "description": "Composition of fixed and recurring pricing details",
+            "type": "object",
+            "properties": {
+              "Fixed": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PricingDetailsSapStandardVm",
+                "description": "Get or set Fixed pricing"
+              },
+              "Recurring": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PricingDetailsSapStandardVm",
+                "description": "Get or set Recurring pricing"
+              }
+            }
+          },
+          "Webcom.API.Public.Quote.VM.SelectedAttributesVM": {
+            "description": "SelectedAttributesVM",
+            "type": "object",
+            "properties": {
+              "Id": {
+                "format": "int32",
+                "description": "Attribute ID",
+                "type": "integer"
+              },
+              "SystemId": {
+                "description": "Attribute System ID",
+                "type": "string"
+              },
+              "ValueDataType": {
+                "description": "Data type for attribute values",
+                "type": "string"
+              },
+              "Values": {
+                "description": "Attribute values",
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Webcom.API.Public.Quote.VM.SelectedAttributeValuesVM"
+                }
+              },
+              "SyncedFromBackOffice": {
+                "description": "Get or set Synced From Back Office",
+                "type": "boolean"
+              }
+            }
+          },
+          "Webcom.API.Public.Quote.VM.PricingDetailsSapStandardVm": {
+            "description": "Data of item pricing",
+            "type": "object",
+            "properties": {
+              "ListPrice": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PriceVm",
+                "description": "Get or set List Price. This is a unit price of an item before applying discount and multiplying by quantity."
+              },
+              "NetPrice": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PriceVm",
+                "description": "Get or set Net Price. This is item unit price after applying discount."
+              },
+              "ExtendedListPrice": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PriceVm",
+                "description": "Get or set Extended List Price. This is unit item price multiplied by quantity."
+              },
+              "ExtendedAmount": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PriceVm",
+                "description": "Get or set Extended Price. This is total item price after applying quantity, discount and multiplier."
+              },
+              "DiscountPercent": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PriceVm",
+                "description": "Get or set Discount Percent."
+              },
+              "DefaultDiscountPercent": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PriceVm",
+                "description": "Get or set Default Discount Percent"
+              },
+              "MinDiscountPercent": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PriceVm",
+                "description": "Get or set Min Discount Percent"
+              },
+              "MaxDiscountPercent": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PriceVm",
+                "description": "Get or set Max Discount Percent"
+              },
+              "UnitDiscountAmount": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PriceVm",
+                "description": "Get or set Unit Discount Amount. This is discount amount per item unit."
+              },
+              "DiscountAmount": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PriceVm",
+                "description": "Get or set Discount Amount. This is total discount amount for an item."
+              },
+              "Cost": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PriceVm",
+                "description": "Get or set Cost. This is item unit cost."
+              },
+              "ExtendedCost": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PriceVm",
+                "description": "Get or set Extended Cost. This is item cost multiplied by quantity."
+              },
+              "MarginPercent": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PriceVm",
+                "description": "Get or set Margin Percent"
+              },
+              "RolledUpListPrice": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PriceVm",
+                "description": "Get or set Rolled Up List Price"
+              },
+              "RolledUpNetPrice": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PriceVm",
+                "description": "Get or set Rolled Up Net Price"
+              },
+              "RolledUpExtendedListPrice": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PriceVm",
+                "description": "Get or set Rolled Up Extended List Price"
+              },
+              "RolledUpExtendedAmount": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PriceVm",
+                "description": "Get or set Rolled Up Extended Amount"
+              },
+              "RolledUpDiscountPercent": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PriceVm",
+                "description": "Get or set RolledUp Discount Percent"
+              },
+              "RolledUpDiscountAmount": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PriceVm",
+                "description": "Get or set RolledUp Discount Amount"
+              },
+              "RolledUpGrossMargin": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PriceVm",
+                "description": "Get or set Rolled Up Margin Percent"
+              },
+              "RolledUpCost": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PriceVm",
+                "description": "Get or set RolledUp Cost"
+              },
+              "RolledUpExtendedCost": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PriceVm",
+                "description": "Get or set RolledUp Extended Cost"
+              }
+            }
+          },
+          "Webcom.API.Public.Quote.VM.SelectedAttributeValuesVM": {
+            "type": "object",
+            "properties": {
+              "Value": {
+                "description": "Attribute value or value code",
+                "type": "string"
+              },
+              "SystemId": {
+                "description": "Value of attribute's System ID",
+                "type": "string"
+              },
+              "Quantity": {
+                "format": "double",
+                "description": "Attribute quantity",
+                "type": "number"
+              },
+              "ContractDurationUnit": {
+                "description": "Attribute contract duration unit",
+                "type": "string"
+              },
+              "BillingPeriod": {
+                "description": "Attribute billing period",
+                "type": "string"
+              },
+              "VariantConditionKey": {
+                "description": "Variant condition key in case of CPS attribute values",
+                "type": "string"
+              },
+              "VariantConditionKeyFactor": {
+                "format": "double",
+                "description": "Variant condition key factor in case of CPS attribute values",
+                "type": "number"
+              },
+              "Author": {
+                "description": "Author in case of CPS attribute values",
+                "type": "string"
+              }
+            }
+          },
+          "Webcom.API.Public.Quote.VM.ItemsUpdateResponse": {
+            "description": "",
+            "type": "object",
+            "properties": {
+              "ItemFields": {
+                "description": "Gets or sets the item fields.",
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "Webcom.API.Public.Quote.VM.ProductTypeVM": {
+            "description": "Product Type VM",
+            "type": "object",
+            "properties": {
+              "CustomFields": {
+                "description": "Gets or sets the custom fields.",
+                "type": "object",
+                "additionalProperties": {
+                  "type": "object"
+                }
+              },
+              "ProductTypeId": {
+                "format": "int32",
+                "description": "Product Type Id",
+                "type": "integer"
+              },
+              "ProductTypeName": {
+                "description": "Product Type Name",
+                "type": "string"
+              },
+              "ListPrice": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PriceVm",
+                "description": "List Price"
+              },
+              "DiscountPercent": {
+                "format": "double",
+                "description": "Discount Percent",
+                "type": "number"
+              },
+              "DiscountAmount": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PriceVm",
+                "description": "Discount Amount"
+              },
+              "NetPrice": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PriceVm",
+                "description": "Net Price"
+              },
+              "Cost": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PriceVm",
+                "description": "Cost"
+              },
+              "MrcListPrice": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PriceVm",
+                "description": "Mrc List Price"
+              },
+              "MrcCost": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PriceVm",
+                "description": "Mrc Cost"
+              },
+              "MrcDiscountPercent": {
+                "format": "double",
+                "description": "Mrc Discount Percent",
+                "type": "number"
+              },
+              "MrcDiscountAmount": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PriceVm",
+                "description": "Mrc Discount Amount"
+              },
+              "MrcNetPrice": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PriceVm",
+                "description": "Mrc Net Price"
+              },
+              "MinDiscountPercent": {
+                "format": "double",
+                "description": "Min Discount Percent",
+                "type": "number"
+              },
+              "MaxDiscountPercent": {
+                "format": "double",
+                "description": "Max Discount Percent",
+                "type": "number"
+              },
+              "DefaultDiscountPercent": {
+                "format": "double",
+                "description": "Default Discount Percent",
+                "type": "number"
+              },
+              "MinMrcDiscountPercent": {
+                "format": "double",
+                "description": "Min Mrc Discount Percent",
+                "type": "number"
+              },
+              "MaxMrcDiscountPercent": {
+                "format": "double",
+                "description": "Max Mrc Discount Percent",
+                "type": "number"
+              },
+              "DefaultMrcDiscountPercent": {
+                "format": "double",
+                "description": "Default Mrc Discount Percent",
+                "type": "number"
+              },
+              "GrossMarginPercent": {
+                "format": "double",
+                "description": "Gross Margin Percent",
+                "type": "number"
+              },
+              "MrcGrossMarginPercent": {
+                "format": "double",
+                "description": "Mrc Gross Margin Percent",
+                "type": "number"
+              }
+            }
+          },
+          "Webcom.API.Public.Quote.VM.QuoteTableRowVM": {
+            "description": "QuoteTableRowVM class",
+            "type": "object",
+            "properties": {
+              "Id": {
+                "format": "int32",
+                "description": "Get or set Id",
+                "type": "integer"
+              },
+              "Cells": {
+                "description": "Get or set cells",
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Webcom.API.Public.Quote.VM.QuoteTableRowVM.QuoteTableCellObjectVM"
+                }
+              }
+            }
+          },
+          "Webcom.API.Public.Quote.VM.QuoteTableRowVM.QuoteTableCellObjectVM": {
+            "type": "object",
+            "properties": {
+              "ColumnName": {
+                "description": "Get or set column name",
+                "type": "string"
+              },
+              "Value": {
+                "description": "Get or set value",
+                "type": "object"
+              },
+              "Currency": {
+                "description": "Get or set currency powered by SAP standard",
+                "type": "string"
+              }
+            }
+          },
+          "Webcom.API.Common.Models.GenericResponse[Webcom.API.Public.Quote.VM.QuoteTableRowResponseVM]": {
+            "description": "Generic API response with list of objects",
+            "type": "object",
+            "properties": {
+              "List": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Webcom.API.Public.Quote.VM.QuoteTableRowResponseVM"
+                }
+              }
+            }
+          },
+          "Webcom.API.Public.Quote.VM.QuoteTableRowResponseVM": {
+            "description": "Row Response class",
+            "type": "object",
+            "properties": {
+              "Request": {
+                "$ref": "#/definitions/SAP.CPQ.Quote.Common.DTO.QuoteTableCellRequestObject",
+                "description": ""
+              },
+              "ErrorMessage": {
+                "description": "Value",
+                "type": "string"
+              }
+            }
+          },
+          "SAP.CPQ.API.Quote.VM.QuoteTableRowGenericResponse": {
+            "type": "object",
+            "properties": {
+              "List": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Webcom.API.Public.Quote.VM.QuoteTableRowResponseVM"
+                }
+              }
+            }
+          },
+          "Webcom.API.Public.Quote.VM.WorkflowItemActionVM": {
+            "description": "Workflow action view model",
+            "type": "object",
+            "properties": {
+              "Id": {
+                "format": "int32",
+                "description": "The identifier.",
+                "type": "integer"
+              },
+              "Name": {
+                "description": "Name of action.",
+                "type": "string"
+              }
+            }
+          },
+          "Webcom.API.Public.Quote.VM.ApprovalHistoryVM": {
+            "description": "Approval history view model",
+            "type": "object",
+            "properties": {
+              "Status": {
+                "description": "Gets or sets the status.",
+                "type": "string"
+              },
+              "SubmitionDate": {
+                "description": "Gets or sets the submition date.",
+                "type": "string"
+              },
+              "SubmittedBy": {
+                "description": "Gets or sets the submitted by.",
+                "type": "string"
+              },
+              "ApprovalRule": {
+                "description": "Gets or sets the approval rule.",
+                "type": "string"
+              },
+              "Description": {
+                "description": "Gets or sets the description.",
+                "type": "string"
+              },
+              "PerformedBy": {
+                "description": "Gets or sets the performed by.",
+                "type": "string"
+              },
+              "Approver": {
+                "description": "Gets or sets the approver.",
+                "type": "string"
+              },
+              "ResolvingDate": {
+                "description": "Gets or sets the resolving date.",
+                "type": "string"
+              },
+              "Comment": {
+                "description": "Gets or sets the comment.",
+                "type": "string"
+              }
+            }
+          },
+          "Webcom.API.Public.Quote.VM.ApprovalVM": {
+            "type": "object",
+            "properties": {
+              "Id": {
+                "format": "int32",
+                "description": "Gets or sets the identifier.",
+                "type": "integer"
+              },
+              "RuleName": {
+                "description": "Gets or sets the name of the rule.",
+                "type": "string"
+              },
+              "Description": {
+                "description": "Gets or sets the description.",
+                "type": "string"
+              },
+              "CanChooseApprover": {
+                "description": "Gets or sets the message.",
+                "type": "string"
+              },
+              "ResponsibleApprovers": {
+                "description": "Gets or sets the responsible approvers.",
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Webcom.API.Public.Quote.VM.ResponsibleApproverVM"
+                }
+              }
+            }
+          },
+          "Webcom.API.Public.Quote.VM.ResponsibleApproverVM": {
+            "type": "object",
+            "properties": {
+              "Id": {
+                "format": "int32",
+                "description": "Gets or sets the identifier.",
+                "type": "integer"
+              },
+              "Name": {
+                "description": "Gets or sets the name.",
+                "type": "string"
+              }
+            }
+          },
+          "Webcom.API.Public.Quote.VM.ApproversResponsibilityVM": {
+            "type": "object",
+            "properties": {
+              "Id": {
+                "format": "int32",
+                "description": "Gets or sets the identifier.",
+                "type": "integer"
+              },
+              "RuleName": {
+                "description": "Gets or sets the name of the rule.",
+                "type": "string"
+              },
+              "Description": {
+                "description": "Gets or sets the description.",
+                "type": "string"
+              },
+              "SubmissionDate": {
+                "description": "Gets or sets the submission date.",
+                "type": "string"
+              },
+              "SubmittedBy": {
+                "description": "Gets or sets the submitted by.",
+                "type": "string"
+              },
+              "Comment": {
+                "description": "Gets or sets the comment.",
+                "type": "string"
+              }
+            }
+          },
+          "Webcom.API.Public.Quote.VM.CustomerVM": {
+            "description": "Customer data",
+            "type": "object",
+            "properties": {
+              "RoleType": {
+                "description": "Get or set Role Type",
+                "type": "string"
+              },
+              "Active": {
+                "description": "Get or set whether customer is Active",
+                "type": "boolean"
+              },
+              "CompanyName": {
+                "description": "Get or set Company Name",
+                "type": "string"
+              },
+              "FirstName": {
+                "description": "Get or set First Name",
+                "type": "string"
+              },
+              "LastName": {
+                "description": "Get or set Last Name",
+                "type": "string"
+              },
+              "Title": {
+                "description": "Get or set customer Title",
+                "type": "string"
+              },
+              "AddressLine1": {
+                "description": "Get or set the first Address Line",
+                "type": "string"
+              },
+              "AddressLine2": {
+                "description": "Get or set the second Address Line",
+                "type": "string"
+              },
+              "City": {
+                "description": "Get or set City",
+                "type": "string"
+              },
+              "ZipCode": {
+                "description": "Get or set Zip Code",
+                "type": "string"
+              },
+              "State": {
+                "description": "Get or set State",
+                "type": "string"
+              },
+              "Province": {
+                "description": "Get or set Province",
+                "type": "string"
+              },
+              "Country": {
+                "description": "Get or set Country",
+                "type": "string"
+              },
+              "Phone": {
+                "description": "Get or set Phone",
+                "type": "string"
+              },
+              "Fax": {
+                "description": "Get or set Fax",
+                "type": "string"
+              },
+              "Email": {
+                "description": "Get or set Email",
+                "type": "string"
+              },
+              "PrimaryIndustry": {
+                "description": "Get or set Primary Industry",
+                "type": "string"
+              },
+              "TerritoryName": {
+                "description": "Get or set Territory Name",
+                "type": "string"
+              },
+              "CRMAccountId": {
+                "description": "Get or set CRM Account Id",
+                "type": "string"
+              },
+              "CRMContactId": {
+                "description": "Get or set CRM Contact Id",
+                "type": "string"
+              },
+              "CustomerCode": {
+                "description": "Get or set Customer Code",
+                "type": "string"
+              },
+              "CustomFields": {
+                "description": "Get or set Custom Fields",
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Webcom.API.Public.Quote.VM.CustomFieldVM"
+                }
+              }
+            }
+          },
+          "Webcom.Common.Util.Exceptions.DetailsErrorContent": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              },
+              "target": {
+                "type": "string"
+              },
+              "details": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Webcom.Common.Util.Exceptions.BasicErrorContent"
+                }
+              },
+              "internalMessage": {
+                "type": "string"
+              }
+            }
+          },
+          "Webcom.Common.Util.Exceptions.BasicErrorContent": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              }
+            }
+          },
+          "Webcom.API.Public.Quote.VM.QuoteCommentVM": {
+            "description": "Quote Comment view model",
+            "type": "object",
+            "properties": {
+              "Id": {
+                "format": "int32",
+                "description": "The identifier.",
+                "type": "integer"
+              },
+              "ItemId": {
+                "format": "int32",
+                "description": "Item Id.",
+                "type": "integer"
+              },
+              "UserFullName": {
+                "description": "User Full Name.",
+                "type": "string"
+              },
+              "UserEmail": {
+                "description": "User Email.",
+                "type": "string"
+              },
+              "UserCompany": {
+                "description": "User Company",
+                "type": "string"
+              },
+              "DateCreated": {
+                "description": "Date Created",
+                "type": "string"
+              },
+              "Comment": {
+                "description": "Comment text",
+                "type": "string"
+              },
+              "Source": {
+                "format": "int32",
+                "description": "Comment creator",
+                "type": "integer"
+              }
+            }
+          },
+          "Webcom.API.Public.Quote.VM.CustomFieldVM": {
+            "description": "Data of quote item custom field",
+            "type": "object",
+            "properties": {
+              "Name": {
+                "description": "Get or set custom field Name",
+                "type": "string"
+              },
+              "Content": {
+                "description": "Get or set custom field Content",
+                "type": "string"
+              },
+              "PriceUnit": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PriceUnitVm",
+                "description": "Get or set Price Unit"
+              }
+            }
+          },
+          "Webcom.API.Public.Quote.VM.PriceUnitVm": {
+            "description": "The PriceUnit node is visible only when the integration with SAP Variant Configuration and Pricing is enabled.",
+            "type": "object",
+            "properties": {
+              "Quantity": {
+                "description": "Quantity.",
+                "type": "string"
+              },
+              "UnitOfMeasure": {
+                "description": "Unit of measure.",
+                "type": "string"
+              }
+            }
+          },
+          "Webcom.API.Public.Quote.VM.SubscriptionDetailsVM": {
+            "description": "Subscription details data",
+            "type": "object",
+            "properties": {
+              "EffectiveDate": {
+                "description": "Get or set Effective Date",
+                "type": "string"
+              },
+              "RatePlanId": {
+                "description": "Get or set Rate Plan ID",
+                "type": "string"
+              },
+              "ContractStartDate": {
+                "description": "Get or set Contract Start Date",
+                "type": "string"
+              },
+              "ContractEndDate": {
+                "description": "Get or set Contract End Date",
+                "type": "string"
+              },
+              "ContractLength": {
+                "description": "Get or set Contract Length",
+                "type": "string"
+              },
+              "MinimumContractEndDate": {
+                "description": "Get or set Minimum Contract End Date",
+                "type": "string"
+              },
+              "MinimumContractLength": {
+                "description": "Get or set Minimum Contract Length",
+                "type": "string"
+              },
+              "SubscriptionParameters": {
+                "description": "Get or set Subscription Parameters",
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Webcom.API.Public.Quote.VM.SubscriptionParameterVM"
+                }
+              },
+              "Pricing": {
+                "$ref": "#/definitions/Webcom.API.Public.Quote.VM.SubscriptionPricingVM",
+                "description": "Get or set"
+              }
+            }
+          },
+          "Webcom.API.Public.Quote.VM.SubscriptionParameterVM": {
+            "type": "object",
+            "properties": {
+              "Code": {
+                "type": "string"
+              },
+              "Value": {
+                "type": "string"
+              }
+            }
+          },
+          "Webcom.API.Public.Quote.VM.SubscriptionPricingVM": {
+            "description": "Subcription pricing data",
+            "type": "object",
+            "properties": {
+              "RatePlanSnapshotEffectiveDate": {
+                "description": "Get or set Rate Plan Snapshot Effective Date",
+                "type": "string"
+              },
+              "PricingParameters": {
+                "description": "Get or set Pricing Parameters",
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Webcom.API.Public.Quote.VM.PricingParameterVM"
+                }
+              }
+            }
+          },
+          "Webcom.API.Public.Quote.VM.PricingParameterVM": {
+            "type": "object",
+            "properties": {
+              "Code": {
+                "type": "string"
+              },
+              "Value": {
+                "type": "string"
+              }
+            }
+          },
+          "SAP.CPQ.API.Quote.VM.QuoteTableRowGenericResponseVM": {
+            "type": "object",
+            "properties": {
+              "List": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Webcom.API.Public.Quote.VM.QuoteTableRowResponseVM"
+                }
+              }
+            }
+          }
+    }
+}

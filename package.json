@@ -28,7 +28,16 @@
   "cds": {
     "requires": {
       "connectivity": true,
-      "destinations": true
+      "destinations": true,
+      "Quotes": {
+        "kind": "rest",
+        "model": "srv/external/Quotes",
+        "[production]": {
+          "credentials": {
+            "destination": "CPQ_DEST"
+          }
+        }
+      }
     },
     "[development]": {
       "requires": {
